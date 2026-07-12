@@ -395,11 +395,67 @@ body {
 .di-modal-row.caution .di-modal-text { color: var(--di-caution-text); }
 .di-modal-row.bad     .di-modal-text { color: var(--di-bad-text); }
 
+/* ── Disclaimer banner ── */
+.disclaimer-banner {
+  background: #FFFBEB;
+  border-top: 3px solid #F59E0B;
+  border-bottom: 1px solid #FCD34D;
+  padding: var(--sp-12) var(--sp-24);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #78350F;
+}
+@media (prefers-color-scheme: dark) {
+  .disclaimer-banner { background: #1C1500; border-top-color: #D97706; border-bottom-color: #92400E; color: #FDE68A; }
+}
+:root[data-theme="light"] .disclaimer-banner { background: #FFFBEB; border-top-color: #F59E0B; border-bottom-color: #FCD34D; color: #78350F; }
+:root[data-theme="dark"]  .disclaimer-banner { background: #1C1500; border-top-color: #D97706; border-bottom-color: #92400E; color: #FDE68A; }
+
+.disclaimer-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.disclaimer-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.disclaimer-short { flex: 1; }
+.disclaimer-toggle-btn {
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #F59E0B;
+  background: transparent;
+  color: #92400E;
+  cursor: pointer;
+  white-space: nowrap;
+}
+@media (prefers-color-scheme: dark) {
+  .disclaimer-toggle-btn { border-color: #D97706; color: #FDE68A; }
+}
+:root[data-theme="light"] .disclaimer-toggle-btn { border-color: #F59E0B; color: #92400E; }
+:root[data-theme="dark"]  .disclaimer-toggle-btn { border-color: #D97706; color: #FDE68A; }
+
+.disclaimer-detail {
+  display: none;
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-8);
+  border-top: 1px dashed #FCD34D;
+}
+.disclaimer-detail.open { display: block; }
+.disclaimer-detail ul {
+  margin: var(--sp-4) 0 0 var(--sp-16);
+  padding: 0;
+}
+.disclaimer-detail li { margin-bottom: 4px; }
+
 @media (max-width: 640px) {
   .main { padding: var(--sp-16); }
   .filter-bar { padding: var(--sp-12) var(--sp-16); }
   .site-header { padding: var(--sp-12) var(--sp-16); }
   .cards-masonry { columns: 1; }
+  .disclaimer-banner { padding: var(--sp-12) var(--sp-16); }
 }
 </style>
 </head>
@@ -564,6 +620,49 @@ const MEASURES = [
     ]
   }
   ,{
+    id: "CTA-13979",
+    title: "記事詳細 記事同化型CTA挿入（ABC比較）",
+    type: "記事同化型CTA挿入",
+    pages: ["記事詳細ページ"],
+    devices: ["SP", "PC"],
+    result: "win",
+    adoptionLabel: "Cパターン寄せとして本番採用",
+    period: "2026/05/28〜06/15（19日間）",
+    hypothesis: "記事擬態型のCTAセクション設置によるテキストでのサービス訴求により、準顕在層の温度感を高めCVRを改善できる",
+    hypothesisIsAI: false,
+    factuals: [
+      "MCVR: A: 0.098% → B: 0.185% (+188%) → C: 0.262% (+267%)。AvsB・AvsC共にカイ二乗p<0.05で有意差あり",
+      "CTA2（記事同化型）のCTR: A: 0.095% → B: 0.366% (+384%) → C: 0.513% (+539%）と大幅改善",
+      "CTA1のCTR: B・C共に悪化（AvsB: -43%、AvsC: -41%）。特にPCで顕著",
+      "EF完了率: A: 47.6% → B: 17.9% → C: 32.1%（悪化）。適職診断経由の潜在層流入増加が原因",
+      "CVR: A: 0.047% → B: 0.033%（悪化） → C: 0.084%（+180%）。有意差なし（p=0.130）",
+      "PC CパターンのCVRは+454.9%（p=0.033）で有意差あり",
+      "NA: Cパターン寄せ決定。後続でCTA1悩み訴求×CTA2適職診断の組み合わせを検証予定"
+    ],
+    hypothesisInsights: [
+      "CTA1を見るPCユーザーは比較的熱感が高く、シンプルなボタンの方がクリックしやすい可能性がある（記事同化型CTA1は逆効果）",
+      "EF完了率の悪化は適職診断コンテンツ経由の潜在層が増えたためで、CV意欲の低いユーザーが混入した構造的な結果である",
+      "便益（サービスのメリット）を明示するCパターンがBより優位だったことは、就活生がサービス価値を事前に理解してから登録するニーズを反映している可能性がある"
+    ],
+    rootCause: "CTA2（適職診断・記事同化型）が準顕在層に刺さり、CTA1で取りこぼしたユーザーを拾えた。MCVRの有意な改善がEF完了率悪化を上回り、CVRの純増につながった。ただし「MCVRは上がったがEF完了率が半減」という構造は、LTVや予約率での追跡が今後必要。",
+    metrics: {
+      mcvrC: "+266.9%（AvsC、p=0.000 有意差あり）",
+      cta2ctrC: "+538.9%（CTA2クリック率）",
+      cvrC: "+180.2%（AvsC、有意差なし）",
+      efRate: "A: 47.6% → C: 32.1%（悪化）"
+    },
+    nextActions: [
+      "後続検証：A: CTA1悩み訴求+CTA2適職診断 vs B: CTA1通常+CTA2適職診断。CTA1の最適クリエイティブを特定する",
+      "適職診断経由ユーザーの予約率・LTVを追跡し、EF完了率悪化が実害かどうかを判断する",
+      "PCユーザーへのCTA1はシンプルなボタンが有効である可能性をSP/PC別に追加検証する"
+    ],
+    designInsights: [
+      { type: 'good', text: '便益の明示がCVを後押しする：「何が得られるか」を具体的に見せるCパターンがBより優位。就活生はサービス価値を理解してから行動する。CTAには価値の言語化を必ず入れる。' },
+      { type: 'bad', text: '記事同化型CTAをCTA1（熱量が高いユーザー向け）に使うと逆効果：PCユーザーのCTA1位置は熱感が高く、シンプルなボタンの方がクリックされやすい。「同化型＝常に効く」ではない。ユーザーの熱量に合わせてデザインを使い分ける。' },
+      { type: 'caution', text: 'EF完了率の悪化≠施策失敗：適職診断経由の潜在層が増えたことで相対的に下がっただけ。指標が悪化したときは「誰が増えたか」を必ず確認する。単一指標だけで施策を評価しない。' },
+    ]
+  }
+  ,{
     id: "CTA-12699",
     title: "記事詳細ページ FV UI変更によるエンゲージメント改善 ph1",
     type: "UI変更（FV改善）",
@@ -686,6 +785,25 @@ const INSIGHTS = {
   <span class="filter-count" id="filter-count"></span>
 </div>
 
+<div class="disclaimer-banner" id="disclaimer-banner">
+  <div class="disclaimer-summary" onclick="toggleDisclaimer()">
+    <span class="disclaimer-icon">⚠️</span>
+    <span class="disclaimer-short">
+      <strong>施策結果の読み方について</strong> ― 記載の数値はテスト期間中のスナップショットです。ABテスト結果のみで施策の価値を断言せず、外部環境を必ず考慮してください。
+    </span>
+    <button class="disclaimer-toggle-btn" id="disclaimer-btn">詳しく見る</button>
+  </div>
+  <div class="disclaimer-detail" id="disclaimer-detail">
+    <ul>
+      <li><strong>① 季節性・YoY（前年同期比）</strong> — 就活シーズンの時期により母数が大きく変動する。前年同期と採用市場の環境が変わっていると、純粋な施策効果との分離が困難になる。</li>
+      <li><strong>② 学生層の卒年差（26卒・27卒・28卒…）</strong> — 卒年によってニーズ・情報感度・行動パターンが異なる。市場に出ている学年の構成が変われば、同一施策でも結果が変わりうる。</li>
+      <li><strong>③ 採用市場・社会動向</strong> — 企業の採用意欲・就活解禁時期の前後・景況感の変化が、ユーザーの登録動機に影響する。テスト期間中に大きな市場変動があった場合は特に注意。</li>
+      <li><strong>④ 競合媒体・外部要因</strong> — 競合サービスの大型施策・Googleアルゴリズムの更新・SEO流入量の変動が、流入ユーザーの質を変える可能性がある。</li>
+    </ul>
+    <p style="margin-top:8px;font-style:italic;">「勝ち/負け」はあくまでテスト条件下での判定。上記を踏まえたうえで、次施策の設計に活かすことが重要です。</p>
+  </div>
+</div>
+
 <main class="main">
   <!-- List view -->
   <div id="view-list">
@@ -764,6 +882,14 @@ const INSIGHTS = {
 </div>
 
 <script>
+// ===== Disclaimer toggle =====
+function toggleDisclaimer() {
+  const detail = document.getElementById('disclaimer-detail');
+  const btn = document.getElementById('disclaimer-btn');
+  const isOpen = detail.classList.toggle('open');
+  btn.textContent = isOpen ? '閉じる' : '詳しく見る';
+}
+
 // ===== State =====
 let activeTypes = new Set();
 let activeDevices = new Set();
