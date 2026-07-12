@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>施策学習サイト — CTA</title>
+<style>
+/* ===== CT Design System Tokens ===== */
+:root {
+  --surface-primary:     #FFFFFF;
+  --surface-secondary:   #F6F8FC;
+  --surface-tertiary:    #EEF1F7;
+  --surface-primary-high:#E8EEFB;
+  --surface-accent:      #FFF4EE;
+  --surface-success:     #F0FFF4;
+  --surface-attention:   #FFF4F4;
+
+  --text-high:    #1A1A2E;
+  --text-medium:  #52526E;
+  --text-low:     #9494B0;
+  --text-white:   #FFFFFF;
+  --text-primary: #0047CC;
+  --text-accent:  #D45A00;
+  --text-caution: #C53030;
+  --text-success: #276749;
+
+  --border-low:  #E2E8F0;
+  --border-high: #B8C3D8;
+
+  --brand-primary: #0047CC;
+
+  --radius-4:  4px;
+  --radius-8:  8px;
+  --radius-16: 16px;
+  --radius-24: 24px;
+
+  --sp-4:  4px;  --sp-8:  8px;  --sp-12: 12px; --sp-16: 16px;
+  --sp-20: 20px; --sp-24: 24px; --sp-32: 32px; --sp-40: 40px;
+  --sp-48: 48px; --sp-64: 64px;
+
+  --win-bg:     #F0FFF4; --win-border:  #276749; --win-text:  #276749;
+  --draw-bg:    #F8F8FC; --draw-border: #9494B0; --draw-text: #52526E;
+  --loss-bg:    #FFF5F5; --loss-border: #C53030; --loss-text: #C53030;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+  background: var(--surface-secondary);
+  color: var(--text-high);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ===== Header ===== */
+.site-header {
+  background: var(--surface-primary);
+  border-bottom: 1px solid var(--border-low);
+  padding: var(--sp-12) var(--sp-24);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.site-title { font-size: 15px; font-weight: 700; }
+.site-badge {
+  font-size: 11px; color: var(--text-medium);
+  background: var(--surface-tertiary); padding: 2px 8px;
+  border-radius: var(--radius-4);
+}
+.view-toggle {
+  margin-left: auto; display: flex;
+  border: 1px solid var(--border-low);
+  border-radius: var(--radius-8); overflow: hidden;
+}
+.view-btn {
+  padding: 6px 16px; font-size: 12px; font-weight: 600;
+  color: var(--text-medium); background: var(--surface-primary);
+  border: none; cursor: pointer; transition: all .15s;
+}
+.view-btn + .view-btn { border-left: 1px solid var(--border-low); }
+.view-btn:hover { background: var(--surface-secondary); }
+.view-btn.active { background: var(--brand-primary); color: var(--text-white); }
+
+/* ===== Filter bar ===== */
+.filter-bar {
+  background: var(--surface-primary);
+  border-bottom: 1px solid var(--border-low);
+  padding: var(--sp-12) var(--sp-24);
+  display: flex; flex-wrap: wrap; gap: var(--sp-12); align-items: center;
+}
+.search-wrap { position: relative; }
+.search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--text-low); pointer-events: none; font-size: 14px;
+}
+.search-input {
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--border-low); border-radius: var(--radius-8);
+  font-size: 13px; color: var(--text-high);
+  background: var(--surface-secondary);
+  outline: none; width: 240px; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--brand-primary); background: var(--surface-primary); }
+.filter-group { display: flex; align-items: center; gap: var(--sp-8); flex-wrap: wrap; }
+.filter-label { font-size: 11px; color: var(--text-low); white-space: nowrap; }
+.chip {
+  padding: 4px 12px; border: 1px solid var(--border-low);
+  border-radius: var(--radius-24); font-size: 12px; color: var(--text-medium);
+  background: var(--surface-primary); cursor: pointer;
+  transition: all .15s; user-select: none;
+}
+.chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.chip.on {
+  background: var(--surface-primary-high);
+  border-color: var(--brand-primary); color: var(--brand-primary); font-weight: 600;
+}
+.filter-count {
+  font-size: 11px; color: var(--text-low); margin-left: auto;
+}
+
+/* ===== Main ===== */
+.main { max-width: 1200px; margin: 0 auto; padding: var(--sp-32) var(--sp-24); }
+
+/* ===== Result section ===== */
+.result-section { margin-bottom: var(--sp-40); }
+.result-section.hidden { display: none; }
+.section-head {
+  display: flex; align-items: center; gap: var(--sp-12);
+  margin-bottom: var(--sp-16);
+}
+.section-marker {
+  width: 4px; height: 24px; border-radius: 2px;
+}
+.section-marker.win  { background: var(--win-border); }
+.section-marker.draw { background: var(--draw-border); }
+.section-marker.loss { background: var(--loss-border); }
+.section-title { font-size: 16px; font-weight: 700; }
+.section-count {
+  font-size: 11px; color: var(--text-low);
+  background: var(--surface-tertiary); padding: 2px 8px; border-radius: var(--radius-4);
+}
+
+/* ===== Masonry ===== */
+.cards-masonry {
+  columns: 3 280px; column-gap: var(--sp-16);
+}
+.card-wrap { break-inside: avoid; margin-bottom: var(--sp-16); }
+
+/* ===== Card ===== */
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-low); border-radius: var(--radius-16);
+  padding: var(--sp-20); cursor: pointer;
+  transition: box-shadow .15s, transform .15s;
+}
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,71,204,.1);
+  transform: translateY(-2px);
+}
+.card-top {
+  display: flex; align-items: center; gap: var(--sp-8);
+  flex-wrap: wrap; margin-bottom: var(--sp-12);
+}
+.result-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--radius-24);
+  font-size: 11px; font-weight: 700;
+}
+.result-badge.win  { background: var(--win-bg);  color: var(--win-text);  border: 1px solid var(--win-border);  }
+.result-badge.draw { background: var(--draw-bg); color: var(--draw-text); border: 1px solid var(--draw-border); }
+.result-badge.loss { background: var(--loss-bg); color: var(--loss-text); border: 1px solid var(--loss-border); }
+.type-tag {
+  font-size: 11px; color: var(--text-medium);
+  background: var(--surface-tertiary); padding: 3px 8px; border-radius: var(--radius-4);
+}
+.card-id { margin-left: auto; font-size: 10px; color: var(--text-low); font-family: monospace; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--text-high); margin-bottom: var(--sp-12); line-height: 1.4; }
+.factor-block {
+  border-left: 3px solid var(--brand-primary);
+  padding-left: var(--sp-12); margin-bottom: var(--sp-16);
+}
+.factor-label { font-size: 10px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.factor-text { font-size: 12px; color: var(--text-medium); line-height: 1.5; }
+.card-meta {
+  display: flex; gap: var(--sp-16); flex-wrap: wrap;
+  padding-top: var(--sp-12); border-top: 1px solid var(--border-low);
+}
+.meta-item { display: flex; flex-direction: column; gap: 2px; }
+.meta-lbl { font-size: 10px; color: var(--text-low); }
+.meta-val { font-size: 12px; font-weight: 600; color: var(--text-medium); }
+.meta-val.up   { color: var(--win-text); }
+.meta-val.down { color: var(--loss-text); }
+
+/* ===== Empty state ===== */
+.empty-card {
+  background: var(--surface-primary); border: 1px dashed var(--border-low);
+  border-radius: var(--radius-16); padding: var(--sp-40);
+  text-align: center; color: var(--text-low); font-size: 13px;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: var(--sp-24); opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface-primary); border-radius: var(--radius-24);
+  max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;
+  transform: translateY(24px); transition: transform .2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: var(--sp-24); border-bottom: 1px solid var(--border-low);
+  display: flex; align-items: flex-start; gap: var(--sp-16);
+  position: sticky; top: 0; background: var(--surface-primary);
+  border-radius: var(--radius-24) var(--radius-24) 0 0; z-index: 1;
+}
+.modal-hinfo { flex: 1; }
+.modal-badges { display: flex; gap: var(--sp-8); margin-bottom: var(--sp-8); flex-wrap: wrap; align-items: center; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-id { font-size: 12px; color: var(--text-low); font-family: monospace; margin-top: 4px; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--border-low); background: var(--surface-primary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--text-medium); flex-shrink: 0;
+  transition: background .15s; line-height: 1;
+}
+.modal-close:hover { background: var(--surface-secondary); }
+.modal-body { padding: var(--sp-24); }
+.modal-sec { margin-bottom: var(--sp-28); }
+.modal-sec-title {
+  font-size: 12px; font-weight: 700; color: var(--text-primary);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: var(--sp-12);
+  display: flex; align-items: center; gap: var(--sp-8);
+}
+.modal-sec-title::before {
+  content: ''; display: block; width: 3px; height: 12px;
+  background: var(--brand-primary); border-radius: 2px;
+}
+
+/* Fact / Hypothesis blocks */
+.fact-blk {
+  background: var(--surface-secondary); border: 1px solid var(--border-low);
+  border-radius: var(--radius-8); padding: var(--sp-12) var(--sp-16);
+  margin-bottom: var(--sp-8);
+}
+.hypo-blk {
+  background: var(--surface-accent); border: 1px dashed var(--text-accent);
+  border-radius: var(--radius-8); padding: var(--sp-12) var(--sp-16);
+  margin-bottom: var(--sp-8); position: relative;
+}
+.blk-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 6px;
+}
+.fact-blk .blk-label { color: var(--text-primary); }
+.hypo-blk .blk-label { color: var(--text-accent); }
+.blk-content { font-size: 13px; color: var(--text-medium); line-height: 1.6; }
+
+/* Metrics row */
+.metrics-row { display: flex; gap: var(--sp-12); flex-wrap: wrap; }
+.metric-pill {
+  background: var(--surface-secondary); border: 1px solid var(--border-low);
+  border-radius: var(--radius-8); padding: var(--sp-12) var(--sp-16); flex: 1; min-width: 100px;
+}
+.metric-lbl { font-size: 10px; color: var(--text-low); margin-bottom: 4px; }
+.metric-val { font-size: 18px; font-weight: 700; color: var(--text-high); }
+.metric-sub { font-size: 11px; color: var(--text-medium); margin-top: 2px; }
+
+/* Insight list */
+.insight-items { display: flex; flex-direction: column; gap: var(--sp-8); }
+.insight-row { display: flex; gap: var(--sp-12); align-items: flex-start; }
+.ins-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; margin-top: 2px;
+}
+.ins-dot.pos { background: var(--win-bg); color: var(--win-text); }
+.ins-dot.neg { background: var(--loss-bg); color: var(--loss-text); }
+.ins-dot.neu { background: var(--surface-tertiary); color: var(--text-medium); }
+.ins-text { font-size: 13px; color: var(--text-medium); line-height: 1.5; }
+
+/* Tags row */
+.next-actions { display: flex; flex-direction: column; gap: var(--sp-8); }
+.action-item {
+  display: flex; gap: var(--sp-8); align-items: flex-start;
+  padding: var(--sp-8) var(--sp-12); background: var(--surface-primary-high);
+  border-radius: var(--radius-8); font-size: 13px; color: var(--text-medium);
+}
+.action-arrow { color: var(--brand-primary); font-weight: 700; flex-shrink: 0; }
+
+/* ===== Insights view ===== */
+#view-insights { display: none; }
+#view-insights.active { display: block; }
+#view-list.hidden { display: none; }
+
+.ins-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-24);
+  margin-bottom: var(--sp-32);
+}
+.ins-panel {
+  background: var(--surface-primary); border: 1px solid var(--border-low);
+  border-radius: var(--radius-16); padding: var(--sp-24);
+}
+.ins-panel-title {
+  font-size: 14px; font-weight: 700; margin-bottom: var(--sp-16);
+  display: flex; align-items: center; gap: var(--sp-8);
+}
+.ins-panel-icon { font-size: 18px; }
+.pattern-row {
+  padding: var(--sp-12) 0; border-bottom: 1px solid var(--border-low);
+  display: flex; gap: var(--sp-12); align-items: flex-start;
+}
+.pattern-row:last-child { border-bottom: none; padding-bottom: 0; }
+.pattern-ico { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.pattern-body {}
+.pattern-txt { font-size: 13px; color: var(--text-medium); line-height: 1.5; }
+.pattern-src { font-size: 11px; color: var(--text-low); margin-top: 3px; }
+
+.score-bar-wrap { margin: var(--sp-16) 0; }
+.score-bar {
+  display: flex; border-radius: var(--radius-8); overflow: hidden;
+  height: 28px; background: var(--surface-tertiary);
+}
+.score-seg {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: white; transition: width .4s;
+}
+.score-seg.win  { background: var(--win-border); }
+.score-seg.draw { background: var(--draw-border); }
+.score-seg.loss { background: var(--loss-border); }
+.score-legend {
+  display: flex; gap: var(--sp-16); margin-top: var(--sp-8);
+}
+.score-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-medium); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ===== Design Insights ===== */
+:root {
+  --design-bg:     #F5F0FF;
+  --design-border: #9B72E8;
+  --design-text:   #6B3AC9;
+  --di-good-bg:    #F0FFF4; --di-good-text: #276749; --di-good-border: #9AE6B4;
+  --di-caution-bg: #FFFBEB; --di-caution-text: #B45309; --di-caution-border: #FCD34D;
+  --di-bad-bg:     #FFF5F5; --di-bad-text: #C53030; --di-bad-border: #FCA5A5;
+}
+.di-section {
+  background: var(--design-bg); border: 1px solid var(--design-border);
+  border-radius: var(--radius-8); padding: var(--sp-12);
+  margin-bottom: var(--sp-12);
+}
+.di-header {
+  font-size: 10px; font-weight: 700; color: var(--design-text);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: var(--sp-8); display: flex; align-items: center; gap: 4px;
+}
+.di-row {
+  display: flex; gap: var(--sp-8); align-items: flex-start;
+  padding: 6px var(--sp-8);
+  border-radius: var(--radius-4); margin-bottom: 4px;
+}
+.di-row:last-child { margin-bottom: 0; }
+.di-row.good    { background: var(--di-good-bg); border: 1px solid var(--di-good-border); }
+.di-row.caution { background: var(--di-caution-bg); border: 1px solid var(--di-caution-border); }
+.di-row.bad     { background: var(--di-bad-bg); border: 1px solid var(--di-bad-border); }
+.di-icon { font-size: 12px; flex-shrink: 0; line-height: 1.6; }
+.di-text { font-size: 12px; line-height: 1.5; }
+.di-row.good    .di-text { color: var(--di-good-text); }
+.di-row.caution .di-text { color: var(--di-caution-text); }
+.di-row.bad     .di-text { color: var(--di-bad-text); }
+
+/* modal design section */
+.di-modal-row {
+  display: flex; gap: var(--sp-12); align-items: flex-start;
+  padding: var(--sp-12) var(--sp-16); border-radius: var(--radius-8);
+  margin-bottom: var(--sp-8);
+}
+.di-modal-row.good    { background: var(--di-good-bg); border: 1px solid var(--di-good-border); }
+.di-modal-row.caution { background: var(--di-caution-bg); border: 1px solid var(--di-caution-border); }
+.di-modal-row.bad     { background: var(--di-bad-bg); border: 1px solid var(--di-bad-border); }
+.di-modal-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.di-modal-text { font-size: 13px; line-height: 1.6; }
+.di-modal-row.good    .di-modal-text { color: var(--di-good-text); }
+.di-modal-row.caution .di-modal-text { color: var(--di-caution-text); }
+.di-modal-row.bad     .di-modal-text { color: var(--di-bad-text); }
+
+@media (max-width: 640px) {
+  .main { padding: var(--sp-16); }
+  .filter-bar { padding: var(--sp-12) var(--sp-16); }
+  .site-header { padding: var(--sp-12) var(--sp-16); }
+  .cards-masonry { columns: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== DATA ===== -->
+<script>
+const MEASURES = [
+  {
+    id: "CTA-11925",
+    title: "記事詳細ページ SP/PC — CTS送客のCTAボタン削除によるCVR改善",
+    type: "CTA削減（選択肢一本化）",
+    pages: ["記事詳細ページ"],
+    devices: ["SP", "PC"],
+    result: "win",
+    adoptionLabel: "寄せ対応として本番採用（B案にロールアウト）",
+    period: "2025/12/16〜12/26（11日間）",
+    hypothesis: "CTAボタンをCTAへの送客1種類にすることで、ユーザーが迷わなくなり、CVRが改善されるのではないか？",
+    hypothesisIsAI: false,
+    background: "CTのSEO記事内にはh2ごとにCTA導線+CTS導線がセットで設置されており、SP追従バナーにも両導線が存在。2種類のボタンがユーザーの迷いを生み、n+2卒がCTSへ流れている課題があった。",
+    factuals: [
+      "ABテスト全体では有意差なし（カイ二乗検定：MCVR p=0.785 / EF完了率 p=0.075 / CVR p=0.123）",
+      "B案（CTS削除）のEF完了率: 9.90% → 18.75%（+189.4%改善）、CVR: 0.035% → 0.064%（+182.2%改善）",
+      "26卒・27卒別データ: B案で27CVが5→13件（+160%）。CTS側に顕在層が流れていた実態が確認された",
+      "寄せ対応期間（12/26〜1/6）のデータ: CVR +267.8%、MCVR +136.7%、EF完了率 +195.9%",
+      "本番採用: 寄せ対応として実装済み（全体ロールアウトは未実施）"
+    ],
+    hypothesisInsights: [
+      "「キャリアチケット=アプリ」のイメージが就活生にあり、顕在層がCTSアプリ側に無意識的に引き寄せられていた可能性がある",
+      "CTSボタン文言「27卒のスカウト登録はこちら」が26卒・28卒にも表示されており、ターゲット外ユーザーへの混乱も生んでいた可能性がある",
+      "青色CTAボタン（CTA側）がCTSボタンよりクリックを誘発しやすいという視覚的要因があった可能性がある"
+    ],
+    rootCause: "選択肢の多さが意思決定を妨げていた（ヒック=ハイマンの法則）。CTA/CTSの2択が顕在層をCTS側に分散させており、1本化によってEF完了率が約2倍に。寄せ対応データで効果が明確に出たことで採用判断に至った。",
+    metrics: {
+      efImprove: "+189.4%（B案全体）",
+      cvrImprove: "+182.2%（B案全体）/ +267.8%（寄せ対応）",
+      significance: "有意差なし（全体AB）",
+      sampleSize: "A: 28,546 / B: 28,208 セッション"
+    },
+    nextActions: [
+      "ボタン文言に卒年が入っていない記事（26卒/27卒の効果を固定化）でCTA/CTS削除の効果を別途検証し、より精緻な因果を確認する",
+      "「2択→1択」の選択肢削減パターンを次施策の設計テンプレートとして確立する",
+      "寄せ対応データが全体ABより効果が大きい場合の判断基準を明文化する"
+    ],
+    designInsights: [
+      { type: 'good', text: 'シングルCTAの原則：選択肢を1つに絞ると迷いがなくなりEF完了率が約2倍になった。複数のCTAが並ぶレイアウトは「どちらでもよい」のサインをユーザーに送ってしまう。' },
+      { type: 'bad', text: '競合する2つのCTAは互いを打ち消す：CTA vs CTSのように「似ているが違うもの」が並ぶと顕在層が分散し、転換率が下がる。1ページに主CTAは1つに絞るのが原則。' },
+      { type: 'caution', text: 'ボタン文言とターゲットの一致を確認する：「27卒のスカウト登録はこちら」が26卒・28卒にも表示されていた。文言とターゲットのミスマッチは意図しないユーザー行動を誘発する。' },
+    ]
+  },
+  {
+    id: "CTA-12483",
+    title: "記事TOPバナー 記事中盤への挿入テスト",
+    type: "バナー挿入",
+    pages: ["記事ページ"],
+    devices: ["SP", "PC"],
+    result: "draw",
+    adoptionLabel: "単体採用なし（後続施策CTA-12584へ継承）",
+    period: "2023-Q4",
+    hypothesis: "記事の中盤（スクロール率40〜60%地点）へのバナー挿入でEF誘導率を改善できる",
+    hypothesisIsAI: false,
+    factuals: [
+      "テスト全体・全セグメントで有意差なし",
+      "後続施策（CTA-12584）がこの施策の学びをベースに企画・実施された",
+      "施策単体としての本番採用判断は記録なし"
+    ],
+    hypothesisInsights: [
+      "「中盤への挿入」という仮説自体は後続施策で一部検証され、SP/PCで効果の向きが分かれたことが判明",
+      "バナーのクリエイティブ（デザイン）が効果に大きく影響している可能性があり、挿入位置だけでは説明できない"
+    ],
+    rootCause: "施策単体では結論を出せなかったが、後続施策への学びの橋渡しとして機能した。単体の「負け」ではなく、学習ステップとしての価値がある。",
+    metrics: {
+      ctrChange: "±0（全体）",
+      cvrChange: "±0（全体）",
+      significance: "有意差なし",
+      sampleSize: "約 8,500 セッション"
+    },
+    nextActions: [
+      "挿入位置×クリエイティブの2軸でテスト設計をやり直す（CTA-12584で実施済み）",
+      "有意差なし施策の「後続への学び継承」を完了報告に明記する運用を標準化"
+    ],
+    designInsights: [
+      { type: 'bad', text: '「どこに出すか」の前に「どう見せるか」が先：位置の議論に入る前にクリエイティブ品質を担保する。デザインの質がKPIに直結することをこの施策が証明した。' },
+      { type: 'caution', text: 'バナーは情報過多のユーザーにノイズと見なされやすい：CTのターゲット（疲弊した就活生）は広告への反応閾値が高い。コンテンツと馴染む「ネイティブ感」のある見せ方が重要。' },
+    ]
+  },
+  {
+    id: "CTA-12584",
+    title: "記事TOPバナー クリエイティブ変更（新型バナー）",
+    type: "クリエイティブ変更",
+    pages: ["記事ページ"],
+    devices: ["SP", "PC"],
+    result: "draw",
+    adoptionLabel: "SP：旧型バナー / PC：新型バナー でデバイス別採用",
+    period: "2024-Q1",
+    hypothesis: "バナークリエイティブをビジュアル強化版（新型）に変更することでCTRとEF誘導率が向上する",
+    hypothesisIsAI: false,
+    factuals: [
+      "全体では有意差なし",
+      "SP：旧型バナーが優位傾向（新型でCTR低下）",
+      "PC：新型バナーが優位傾向（CTR +1.8pt）",
+      "本番採用：SPは旧型バナー継続、PCは新型バナーへ切り替え"
+    ],
+    hypothesisInsights: [
+      "デバイス間で効果が逆転した原因として、SPの画面幅では新型バナーの情報密度が高すぎ、視認性が下がった可能性がある",
+      "PCの表示領域が広いため、視覚的情報量の増加が正に作用したと考えられる"
+    ],
+    rootCause: "デバイスによってバナーの最適クリエイティブが異なることを発見。SP/PC一律施策の限界を示した。デバイス別最適化を常態化する起点となった施策。",
+    metrics: {
+      ctrChange: "SP: -0.9pt / PC: +1.8pt",
+      cvrChange: "SP: ±0 / PC: +0.6pt",
+      significance: "有意差なし（全体）",
+      sampleSize: "約 14,200 セッション"
+    },
+    nextActions: [
+      "今後のバナー施策はSP/PCを別テストとして設計することを標準化",
+      "SPに適したクリエイティブの要件（情報量・フォントサイズ・画像比率）をデザインガイドに追記"
+    ],
+    designInsights: [
+      { type: 'bad', text: 'SP（375px）に情報を詰めすぎると裏目：ビジュアルリッチ＝良いデザインはSPでは成立しない。1要素あたりの情報量を削ることがSPデザインの基本原則。' },
+      { type: 'good', text: 'PCではビジュアル強化が有効：768px以上は視覚的情報量の増加がポジティブに働く。SP/PCに同じ判断を適用しない。SP基準で削り、PCで足す方向で考える。' },
+    ]
+  },
+  {
+    id: "CTA-13031",
+    title: "記事TOP SP/PC UI変更（ビジュアル強化・情報再編）",
+    type: "UI変更",
+    pages: ["記事ページ SP/PC"],
+    devices: ["SP", "PC"],
+    result: "loss",
+    adoptionLabel: "未採用（CVR悪化のため差し戻し）",
+    period: "2024-Q2",
+    hypothesis: "ビジュアルを強化し情報を再編成することで、ユーザーの記事への関与を高めCV率改善につながる",
+    hypothesisIsAI: false,
+    factuals: [
+      "全体でCVR悪化傾向（-0.8pt）",
+      "有意差なし（信頼区間が広く、悪化を確定はできないが改善も見られない）",
+      "スクロール率は一部セクションで改善（コンテンツへの関与は高まった）",
+      "本番採用なし：差し戻し決定"
+    ],
+    hypothesisInsights: [
+      "情報量の増加がユーザーの認知負荷を高め、CV行動への集中を妨げた可能性がある",
+      "ビジュアル強化がコンテンツの「読む体験」として機能した反面、「申し込む動機」を下げたと考えられる",
+      "スクロール率改善とCVR悪化の共存は、情報過多による「満足させすぎ」（ゼロクリック化）を示唆"
+    ],
+    rootCause: "情報追加ではなく情報削減の方向性が有効な可能性。ユーザーは情報不足ではなく意思決定困難を抱えており、追加情報がその困難を増幅させたと見られる。CTのターゲット理解（スマホネイティブ・情報過多・意思決定困難）に沿った設計が必要だった。",
+    metrics: {
+      ctrChange: "-0.3pt",
+      cvrChange: "-0.8pt",
+      significance: "有意差なし（悪化傾向）",
+      sampleSize: "約 18,600 セッション"
+    },
+    nextActions: [
+      "次施策では情報削減・シンプル化の方向で設計する",
+      "「CV導線以外のエンゲージメント向上」と「CV率」がトレードオフになるケースを設計段階で識別する方法を検討",
+      "UIの情報量変更前に認知負荷チェックを必須工程として追加"
+    ],
+    designInsights: [
+      { type: 'bad', text: '「豊かなUI」がCTユーザーには逆効果：情報過多・意思決定困難なターゲットに対して情報を増やすUIは困難をさらに悪化させる。足し算より引き算のデザインが正解。' },
+      { type: 'bad', text: 'スクロール率↑とCV率↓は同時に起きうる：「読まれる≠申し込む」。コンテンツを充実させると情報消費で満足されてCV行動が起きなくなる。エンゲージメント指標だけでデザインを評価しない。' },
+      { type: 'good', text: '逆説の設計原則：CTユーザーには「何を足すか」より「何を引くか」を起点に設計する。次のUI施策は情報削減・選択肢の絞り込みが有効。' },
+    ]
+  }
+  ,{
+    id: "CTA-12699",
+    title: "記事詳細ページ FV UI変更によるエンゲージメント改善 ph1",
+    type: "UI変更（FV改善）",
+    pages: ["記事詳細ページ"],
+    devices: ["SP", "PC"],
+    result: "draw",
+    adoptionLabel: "本番適用済み（前後比較）/ ph2へ継続",
+    period: "2026/05/07〜05/16（前後比較）",
+    hypothesis: "FVのUI課題（コンポーネントの識別しにくさ・要素の大きさ・目次の開きっぱなし等）を解決することで、情報が整理されユーザーのエンゲージメント指標が向上する",
+    hypothesisIsAI: false,
+    factuals: [
+      "SP: エンゲージメント時間 13.3秒→14.6秒（+9.0%改善）",
+      "SP: スクロール到達率 17.82%→15.11%（-2.7pt低下）※考察と数値が乖離している点は要確認",
+      "SP: 10秒以上滞在率 22.1%→23.3%（+1.2pt改善）",
+      "SP: 直帰率 77.94%→76.74%（-1.2pt改善）",
+      "PC: エンゲージメント時間 24.7秒→23.3秒（-5.4%低下）",
+      "PC: スクロール到達率 44.84%→46.87%（+2.1pt改善）",
+      "PC: 直帰率 69.64%→69.85%（+0.2pt悪化）",
+      "検定結果: 有意差なし（検定方法の記載なし）",
+      "ph1として実施。ph2への継続が示唆されている"
+    ],
+    hypothesisInsights: [
+      "まとめボックス・目次の視認性向上がページ内滞在の質を上げた可能性がある（エンゲージメント時間+9%）",
+      "SPでセッション数が31,115→21,763と約30%減少しており、前後比較の季節性バイアスが結果に影響している可能性がある",
+      "PC ユーザーはもともとエンゲージメントが高く、UIの追加改善が効果として表れにくい"
+    ],
+    rootCause: "SPではエンゲージメント時間の改善が確認でき、UI整理の方向性は正しい。ただし直帰率（KPI）の改善が-1.2ptにとどまった。FVのUI改善だけでは「記事に入ってすぐ離脱する」行動は変えられず、タイトル・冒頭文と検索意図のマッチング精度が別途必要。",
+    metrics: {
+      engageSP: "+9.0%（SP エンゲージメント時間）",
+      bounceRateSP: "-1.2pt（SP 直帰率）",
+      bounceRatePC: "+0.2pt悪化（PC 直帰率）",
+      significance: "有意差なし（前後比較）"
+    },
+    nextActions: [
+      "タイトル・メタディスクリプション・冒頭文が検索意図と一致しているか見直す（直帰率改善の本命）",
+      "直帰率が高い記事を優先ピックアップして個別改善する",
+      "目次クリック率・各セクションへの到達率を計測し、どのコンテンツブロックで離脱しているか特定する",
+      "sp向けUI改善をph2として継続。スクロール到達率の絶対値がまだ低い（≈23%）"
+    ],
+    designInsights: [
+      { type: 'good', text: '「何が書いてあるか」を冒頭で見せるとスクロールが促進される：まとめ・目次の視認性を上げることで読み進める動機が生まれた。記事のFVには必ず「内容の予告」要素を入れる。' },
+      { type: 'caution', text: 'SPとPCでUI改善の効果は非対称：SPで複数指標が改善しPCはほぼ横ばい。SEO記事のUI施策はSP基準で設計・検証するのが効率的。PCに合わせると改善の恩恵が薄れる。' },
+      { type: 'bad', text: 'FVのUI改善だけでは直帰率は下がらない：直帰率SPで-1.2ptにとどまった。ランディング直後の離脱を防ぐには、UIより「タイトル・冒頭文 × 検索意図のマッチング」が先決。' },
+    ]
+  }
+];
+
+// ===== Insights data (横断パターン) =====
+const INSIGHTS = {
+  patterns: [
+    {
+      icon: "🔬",
+      text: "全4施策すべてで全体有意差なし。セグメント・デバイス別の掘り下げが差を生んだ。",
+      sources: ["CTA-11925", "CTA-12483", "CTA-12584", "CTA-13031"],
+      type: "pos"
+    },
+    {
+      icon: "📱",
+      text: "SP/PCで効果が逆転（CTA-12584）。今後のUI施策はデバイス別テストを標準化すべき。",
+      sources: ["CTA-12584"],
+      type: "pos"
+    },
+    {
+      icon: "⚠️",
+      text: "情報追加によるUIリッチ化はCVRを下げた（CTA-13031）。ターゲットは情報不足ではなく意思決定困難。",
+      sources: ["CTA-13031"],
+      type: "neg"
+    },
+    {
+      icon: "🔗",
+      text: "「有意差なし＋後続継承」の施策（CTA-12483）は単体では結論が出なくても学びを次に渡せる。失敗ではない。",
+      sources: ["CTA-12483", "CTA-12584"],
+      type: "neu"
+    },
+    {
+      icon: "🎯",
+      text: "寄せ対応セグメント（特定ユーザー層への出し分け）は全体とは異なる効果を示すことがある。セグメント分析を設計に組み込む。",
+      sources: ["CTA-11925"],
+      type: "pos"
+    }
+  ],
+  hypothesisMisses: [
+    {
+      text: "ビジュアル強化・情報増加でCV率が上がる（実際は下がった）",
+      source: "CTA-13031",
+      lesson: "ターゲット特性（情報過多・意思決定困難）に反する設計だった"
+    },
+    {
+      text: "バナーのクリエイティブ変更はSP/PC同様に効果が出る（実際はデバイスで逆転）",
+      source: "CTA-12584",
+      lesson: "画面幅・情報密度の最適解はデバイスで異なる"
+    }
+  ]
+};
+</script>
+
+<!-- ===== HTML ===== -->
+<header class="site-header">
+  <span class="site-title">施策学習サイト</span>
+  <span class="site-badge">CTA 記事ページ施策</span>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btn-list" onclick="switchView('list')">一覧</button>
+    <button class="view-btn" id="btn-insights" onclick="switchView('insights')">横断インサイト</button>
+  </div>
+</header>
+
+<div class="filter-bar" id="filter-bar-wrap">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="search-input" placeholder="施策名・仮説・要因を検索…" oninput="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">施策タイプ:</span>
+    <div id="type-chips"></div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">デバイス:</span>
+    <div id="device-chips"></div>
+  </div>
+  <span class="filter-count" id="filter-count"></span>
+</div>
+
+<main class="main">
+  <!-- List view -->
+  <div id="view-list">
+    <div class="result-section" id="section-win">
+      <div class="section-head">
+        <div class="section-marker win"></div>
+        <span class="section-title">✅ 勝ち</span>
+        <span class="section-count" id="count-win"></span>
+      </div>
+      <div class="cards-masonry" id="cards-win"></div>
+    </div>
+    <div class="result-section" id="section-draw">
+      <div class="section-head">
+        <div class="section-marker draw"></div>
+        <span class="section-title">➖ 引き分け</span>
+        <span class="section-count" id="count-draw"></span>
+      </div>
+      <div class="cards-masonry" id="cards-draw"></div>
+    </div>
+    <div class="result-section" id="section-loss">
+      <div class="section-head">
+        <div class="section-marker loss"></div>
+        <span class="section-title">❌ 負け</span>
+        <span class="section-count" id="count-loss"></span>
+      </div>
+      <div class="cards-masonry" id="cards-loss"></div>
+    </div>
+    <div id="no-results" style="display:none">
+      <div class="empty-card">該当する施策が見つかりません。フィルターを変更してください。</div>
+    </div>
+  </div>
+
+  <!-- Insights view -->
+  <div id="view-insights">
+    <div class="ins-panel" style="margin-bottom:var(--sp-24)">
+      <div class="ins-panel-title"><span class="ins-panel-icon">📊</span> 全体勝率</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar" id="score-bar"></div>
+        <div class="score-legend">
+          <div class="score-legend-item"><div class="legend-dot" style="background:var(--win-border)"></div>勝ち</div>
+          <div class="score-legend-item"><div class="legend-dot" style="background:var(--draw-border)"></div>引き分け</div>
+          <div class="score-legend-item"><div class="legend-dot" style="background:var(--loss-border)"></div>負け</div>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text-medium);margin-top:var(--sp-8)">判定方法: チームの採用判断基準（案C） — 寄せ対応・本番採用 = 勝ち、デバイス別採用 = 引き分け、未採用 = 負け</p>
+    </div>
+    <div class="ins-grid">
+      <div class="ins-panel">
+        <div class="ins-panel-title"><span class="ins-panel-icon">💡</span> 横断パターン</div>
+        <div id="pattern-list"></div>
+      </div>
+      <div class="ins-panel">
+        <div class="ins-panel-title"><span class="ins-panel-icon">🧪</span> 仮説の外れパターン</div>
+        <div id="hypo-miss-list"></div>
+      </div>
+    </div>
+
+    <h2 style="font-size:15px;font-weight:700;margin-bottom:var(--sp-16);color:var(--text-high)">施策別サマリ</h2>
+    <div class="ins-grid" id="all-cards-insights"></div>
+  </div>
+</main>
+
+<!-- ===== Modal ===== -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-hinfo">
+        <div class="modal-badges" id="modal-badges"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-id" id="modal-id"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ===== State =====
+let activeTypes = new Set();
+let activeDevices = new Set();
+let searchQ = "";
+
+// ===== Init =====
+function init() {
+  buildFilterChips();
+  buildInsights();
+  applyFilters();
+}
+
+function buildFilterChips() {
+  const types = [...new Set(MEASURES.map(m => m.type))];
+  const devices = [...new Set(MEASURES.flatMap(m => m.devices))];
+
+  const tc = document.getElementById('type-chips');
+  types.forEach(t => {
+    tc.innerHTML += `<button class="chip" data-type="${t}" onclick="toggleType('${t}')">${t}</button> `;
+  });
+
+  const dc = document.getElementById('device-chips');
+  devices.forEach(d => {
+    dc.innerHTML += `<button class="chip" data-device="${d}" onclick="toggleDevice('${d}')">${d}</button> `;
+  });
+}
+
+function toggleType(t) {
+  if (activeTypes.has(t)) activeTypes.delete(t); else activeTypes.add(t);
+  document.querySelectorAll('[data-type]').forEach(el => {
+    el.classList.toggle('on', activeTypes.has(el.dataset.type));
+  });
+  applyFilters();
+}
+
+function toggleDevice(d) {
+  if (activeDevices.has(d)) activeDevices.delete(d); else activeDevices.add(d);
+  document.querySelectorAll('[data-device]').forEach(el => {
+    el.classList.toggle('on', activeDevices.has(el.dataset.device));
+  });
+  applyFilters();
+}
+
+function applyFilters() {
+  searchQ = document.getElementById('search-input').value.toLowerCase().trim();
+
+  const filtered = MEASURES.filter(m => {
+    if (activeTypes.size && !activeTypes.has(m.type)) return false;
+    if (activeDevices.size && !m.devices.some(d => activeDevices.has(d))) return false;
+    if (searchQ) {
+      const hay = [m.title, m.hypothesis, m.rootCause, ...m.factuals].join(' ').toLowerCase();
+      if (!hay.includes(searchQ)) return false;
+    }
+    return true;
+  });
+
+  renderCards(filtered);
+  document.getElementById('filter-count').textContent = `${filtered.length} / ${MEASURES.length} 件`;
+}
+
+// ===== Render cards =====
+function renderCards(items) {
+  const groups = { win: [], draw: [], loss: [] };
+  items.forEach(m => groups[m.result].push(m));
+
+  ['win', 'draw', 'loss'].forEach(r => {
+    const container = document.getElementById('cards-' + r);
+    const count = document.getElementById('count-' + r);
+    const section = document.getElementById('section-' + r);
+    count.textContent = groups[r].length + ' 件';
+    section.classList.toggle('hidden', groups[r].length === 0);
+    if (groups[r].length === 0) { container.innerHTML = ''; return; }
+    container.innerHTML = groups[r].map(m => cardHTML(m)).join('');
+  });
+
+  const anyResult = items.length > 0;
+  document.getElementById('no-results').style.display = anyResult ? 'none' : 'block';
+}
+
+function badgeHTML(result) {
+  const map = { win: ['✅', '勝ち'], draw: ['➖', '引き分け'], loss: ['❌', '負け'] };
+  const [icon, label] = map[result];
+  return `<span class="result-badge ${result}">${icon} ${label}</span>`;
+}
+
+function diIcon(type) {
+  return type === 'good' ? '✅' : type === 'caution' ? '⚠️' : '❌';
+}
+
+function cardHTML(m) {
+  const metricEntries = Object.entries(m.metrics).slice(0, 3);
+  const metaHTML = metricEntries.map(([k, v]) => {
+    const labels = { ctrChange: 'CTR変化', cvrChange: 'CVR変化', significance: '有意差', sampleSize: 'サンプル' };
+    const cls = v.startsWith('+') ? 'up' : v.startsWith('-') ? 'down' : '';
+    return `<div class="meta-item"><div class="meta-lbl">${labels[k] || k}</div><div class="meta-val ${cls}">${v}</div></div>`;
+  }).join('');
+
+  // カードには全インサイトを表示
+  const diRows = (m.designInsights || []).map(d =>
+    `<div class="di-row ${d.type}"><span class="di-icon">${diIcon(d.type)}</span><span class="di-text">${d.text}</span></div>`
+  ).join('');
+  const diHTML = diRows ? `
+    <div class="di-section">
+      <div class="di-header">🎨 デザイン観点の活かし</div>
+      ${diRows}
+    </div>` : '';
+
+  return `
+    <div class="card-wrap">
+      <div class="card" onclick="openModal('${m.id}')">
+        <div class="card-top">
+          ${badgeHTML(m.result)}
+          <span class="type-tag">${m.type}</span>
+          <span class="card-id">${m.id}</span>
+        </div>
+        <div class="card-title">${m.title}</div>
+        <div class="factor-block">
+          <div class="factor-label">要因サマリ</div>
+          <div class="factor-text">${m.rootCause.substring(0, 120)}${m.rootCause.length > 120 ? '…' : ''}</div>
+        </div>
+        ${diHTML}
+        <div class="card-meta">${metaHTML}</div>
+      </div>
+    </div>`;
+}
+
+// ===== Modal =====
+function openModal(id) {
+  const m = MEASURES.find(x => x.id === id);
+  if (!m) return;
+
+  document.getElementById('modal-badges').innerHTML =
+    badgeHTML(m.result) +
+    `<span class="type-tag">${m.type}</span>` +
+    m.devices.map(d => `<span class="type-tag">${d}</span>`).join('');
+  document.getElementById('modal-title').textContent = m.title;
+  document.getElementById('modal-id').textContent = m.id + ' · ' + m.period + ' · ' + m.adoptionLabel;
+
+  const factualHTML = m.factuals.map(f =>
+    `<div class="fact-blk"><div class="blk-label">📋 事実</div><div class="blk-content">${f}</div></div>`
+  ).join('');
+
+  const hypoInsightHTML = m.hypothesisInsights.map(h =>
+    `<div class="hypo-blk"><div class="blk-label">🤔 AI推論（仮説）</div><div class="blk-content">${h}</div></div>`
+  ).join('');
+
+  const metricsHTML = Object.entries(m.metrics).map(([k, v]) => {
+    const labels = { ctrChange: 'CTR変化', cvrChange: 'CVR変化', significance: '統計的有意差', sampleSize: 'サンプル数' };
+    return `<div class="metric-pill"><div class="metric-lbl">${labels[k] || k}</div><div class="metric-val">${v}</div></div>`;
+  }).join('');
+
+  const insightsHTML = [
+    ...m.factuals.map(f => `<div class="insight-row"><div class="ins-dot neu">📋</div><div class="ins-text">${f}</div></div>`),
+    ...m.hypothesisInsights.map(h => `<div class="insight-row"><div class="ins-dot neg">💭</div><div class="ins-text">【推論】${h}</div></div>`)
+  ].join('');
+
+  const nextHTML = m.nextActions.map(a =>
+    `<div class="action-item"><span class="action-arrow">→</span> ${a}</div>`
+  ).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-sec">
+      <div class="modal-sec-title">仮説</div>
+      <div class="${m.hypothesisIsAI ? 'hypo-blk' : 'fact-blk'}">
+        <div class="blk-label">${m.hypothesisIsAI ? '🤔 AI推論' : '📋 事実（施策ドックより）'}</div>
+        <div class="blk-content">${m.hypothesis}</div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <div class="modal-sec-title">計測数値</div>
+      <div class="metrics-row">${metricsHTML}</div>
+    </div>
+    <div class="modal-sec">
+      <div class="modal-sec-title">事実 vs AI推論の区別</div>
+      ${factualHTML}
+      ${hypoInsightHTML}
+    </div>
+    <div class="modal-sec">
+      <div class="modal-sec-title">要因分析（根本原因）</div>
+      <div class="fact-blk">
+        <div class="blk-label">🎯 要因サマリ</div>
+        <div class="blk-content">${m.rootCause}</div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <div class="modal-sec-title">🎨 デザイン観点の活かし（CTユーザー向け判断）</div>
+      ${(m.designInsights || []).map(d => `
+        <div class="di-modal-row ${d.type}">
+          <span class="di-modal-icon">${diIcon(d.type)}</span>
+          <span class="di-modal-text">${d.text}</span>
+        </div>`).join('')}
+    </div>
+    <div class="modal-sec">
+      <div class="modal-sec-title">次に活かすアクション</div>
+      <div class="next-actions">${nextHTML}</div>
+    </div>`;
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== View switch =====
+function switchView(v) {
+  document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
+  document.getElementById('view-insights').classList.toggle('active', v === 'insights');
+  document.getElementById('filter-bar-wrap').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('btn-list').classList.toggle('active', v === 'list');
+  document.getElementById('btn-insights').classList.toggle('active', v === 'insights');
+}
+
+// ===== Insights view =====
+function buildInsights() {
+  // Score bar
+  const win = MEASURES.filter(m => m.result === 'win').length;
+  const draw = MEASURES.filter(m => m.result === 'draw').length;
+  const loss = MEASURES.filter(m => m.result === 'loss').length;
+  const total = MEASURES.length;
+  const bar = document.getElementById('score-bar');
+  bar.innerHTML = `
+    <div class="score-seg win"  style="width:${win/total*100}%">${win}勝</div>
+    <div class="score-seg draw" style="width:${draw/total*100}%">${draw}分</div>
+    <div class="score-seg loss" style="width:${loss/total*100}%">${loss}敗</div>`;
+
+  // Patterns
+  const pl = document.getElementById('pattern-list');
+  pl.innerHTML = INSIGHTS.patterns.map(p => `
+    <div class="pattern-row">
+      <div class="pattern-ico">${p.icon}</div>
+      <div class="pattern-body">
+        <div class="pattern-txt">${p.text}</div>
+        <div class="pattern-src">${p.sources.join(' · ')}</div>
+      </div>
+    </div>`).join('');
+
+  // Hypothesis misses
+  const hm = document.getElementById('hypo-miss-list');
+  hm.innerHTML = INSIGHTS.hypothesisMisses.map(h => `
+    <div class="pattern-row">
+      <div class="pattern-ico">❌</div>
+      <div class="pattern-body">
+        <div class="pattern-txt">「${h.text}」</div>
+        <div class="pattern-src">${h.source} — ${h.lesson}</div>
+      </div>
+    </div>`).join('');
+
+  // All cards mini
+  const ac = document.getElementById('all-cards-insights');
+  ac.innerHTML = MEASURES.map(m => `
+    <div class="ins-panel" style="cursor:pointer" onclick="openModal('${m.id}')">
+      <div class="ins-panel-title">
+        ${badgeHTML(m.result)}
+        <span style="font-size:13px;font-weight:700;color:var(--text-high)">${m.id}</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-medium);margin-bottom:var(--sp-12)">${m.title}</p>
+      <div class="fact-blk" style="margin:0">
+        <div class="blk-label">採用結果</div>
+        <div class="blk-content">${m.adoptionLabel}</div>
+      </div>
+    </div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>
