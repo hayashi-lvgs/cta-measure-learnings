@@ -285,6 +285,12 @@ body {
 .fact-blk .blk-label { color: var(--text-primary); }
 .hypo-blk .blk-label { color: var(--text-accent); }
 .blk-content { font-size: 13px; color: var(--text-medium); line-height: 1.6; }
+.blk-list {
+  margin: 0; padding-left: 1.3em;
+  font-size: 13px; color: var(--text-medium); line-height: 1.6;
+}
+.blk-list li { margin-bottom: 6px; }
+.blk-list li:last-child { margin-bottom: 0; }
 
 /* Metrics row */
 .metrics-row { display: flex; gap: var(--sp-12); flex-wrap: wrap; }
@@ -1133,13 +1139,17 @@ function openModal(id) {
   document.getElementById('modal-title').textContent = m.title;
   document.getElementById('modal-id').textContent = m.id + ' · ' + m.period + ' · ' + m.adoptionLabel;
 
-  const factualHTML = m.factuals.map(f =>
-    `<div class="fact-blk"><div class="blk-label">📋 事実</div><div class="blk-content">${f}</div></div>`
-  ).join('');
+  const factualHTML = m.factuals.length ? `
+    <div class="fact-blk">
+      <div class="blk-label">📋 事実</div>
+      <ul class="blk-list">${m.factuals.map(f => `<li>${f}</li>`).join('')}</ul>
+    </div>` : '';
 
-  const hypoInsightHTML = m.hypothesisInsights.map(h =>
-    `<div class="hypo-blk"><div class="blk-label">🤔 AI推論（仮説）</div><div class="blk-content">${h}</div></div>`
-  ).join('');
+  const hypoInsightHTML = m.hypothesisInsights.length ? `
+    <div class="hypo-blk">
+      <div class="blk-label">🤔 AI推論（仮説）</div>
+      <ul class="blk-list">${m.hypothesisInsights.map(h => `<li>${h}</li>`).join('')}</ul>
+    </div>` : '';
 
   const metricsHTML = Object.entries(m.metrics).map(([k, v]) =>
     `<div class="metric-pill"><div class="metric-lbl">${METRIC_LABELS[k] || k}</div><div class="metric-val">${v}</div></div>`
@@ -1150,9 +1160,6 @@ function openModal(id) {
     ...m.hypothesisInsights.map(h => `<div class="insight-row"><div class="ins-dot neg">💭</div><div class="ins-text">【推論】${h}</div></div>`)
   ].join('');
 
-  const nextHTML = m.nextActions.map(a =>
-    `<div class="action-item"><span class="action-arrow">→</span> ${a}</div>`
-  ).join('');
 
   const screenshotHTML = (typeof SCREENSHOTS !== 'undefined' && SCREENSHOTS[m.id]) ? `
     <div class="modal-sec">
@@ -1195,10 +1202,7 @@ function openModal(id) {
           <span class="di-modal-text">${d.text}</span>
         </div>`).join('')}
     </div>
-    <div class="modal-sec">
-      <div class="modal-sec-title">次に活かすアクション</div>
-      <div class="next-actions">${nextHTML}</div>
-    </div>`;
+    `;
 
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
