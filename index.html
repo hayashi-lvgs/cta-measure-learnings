@@ -46,11 +46,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
-  background: var(--surface-secondary);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  background: #F9FAFB;
   color: var(--text-high);
   line-height: 1.6;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* ===== Header ===== */
@@ -124,45 +124,56 @@ body {
 }
 
 /* ===== Main ===== */
-/* ===== Layout（サイドバー＋コンテンツ） ===== */
+/* ===== Layout（サイドバー＋コンテンツ / melta UI準拠） ===== */
 .layout { display: flex; align-items: flex-start; }
 .content { flex: 1; min-width: 0; }
 .sidebar {
-  width: 216px; flex-shrink: 0;
+  width: 256px; flex-shrink: 0;
   position: sticky; top: 53px;
-  max-height: calc(100vh - 53px); overflow-y: auto;
-  padding: var(--sp-20) var(--sp-12);
+  height: calc(100vh - 53px); overflow-y: auto;
+  padding: var(--sp-16) var(--sp-12) var(--sp-24);
   background: var(--surface-primary);
   border-right: 1px solid var(--border-low);
+  display: flex; flex-direction: column; gap: var(--sp-24);
 }
+.sidebar-search { position: relative; padding: 0 var(--sp-4); }
+.sidebar-search .search-icon { left: 16px; }
+.sidebar-search .search-input { width: 100%; }
+.sidebar-group { display: flex; flex-direction: column; gap: 2px; }
 .sidebar-title {
-  font-size: 11px; font-weight: 700; color: var(--text-low);
-  text-transform: uppercase; letter-spacing: .5px;
-  padding: 0 var(--sp-12); margin-bottom: var(--sp-8);
+  font-size: 13px; font-weight: 600; color: #64748B;
+  padding: 6px var(--sp-16); margin-bottom: 2px;
 }
 .sidebar-item {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8);
   width: 100%; text-align: left;
-  padding: 8px var(--sp-12); border: none; border-radius: var(--radius-8);
+  padding: 8px var(--sp-16); border: none; border-radius: var(--radius-8);
   background: transparent; cursor: pointer;
-  font-size: 13px; color: var(--text-medium); line-height: 1.4;
+  font-size: 15px; font-weight: 500; color: #3D4B5F; line-height: 1.5;
   transition: background .12s;
 }
 .sidebar-item:hover { background: var(--surface-secondary); }
 .sidebar-item.on {
-  background: var(--surface-accent); color: var(--text-primary); font-weight: 700;
+  background: #F0F5FF; color: #2B70EF; font-weight: 600;
 }
 .sidebar-count {
-  font-size: 11px; color: var(--text-low); font-weight: 400;
-  background: var(--surface-tertiary); padding: 1px 7px; border-radius: var(--radius-24);
+  font-size: 12px; color: var(--text-low); font-weight: 400;
+  background: var(--surface-tertiary); padding: 1px 8px; border-radius: var(--radius-24);
   flex-shrink: 0;
 }
-.sidebar-item.on .sidebar-count { color: var(--text-primary); }
+.sidebar-item.on .sidebar-count { color: #2B70EF; background: #E0EBFF; }
+.sidebar-devices { display: flex; gap: var(--sp-8); padding: 4px var(--sp-16); }
+.sidebar-footer {
+  margin-top: auto;
+  padding: var(--sp-16) var(--sp-16) 0;
+  border-top: 1px solid var(--border-low);
+  font-size: 12px; color: var(--text-low);
+}
 
-.main { max-width: 1200px; margin: 0 auto; padding: var(--sp-32) var(--sp-24); }
+.main { max-width: 1200px; margin: 0 auto; padding: var(--sp-40) var(--sp-40) var(--sp-64); }
 
 /* ===== Result section ===== */
-.result-section { margin-bottom: var(--sp-40); }
+.result-section { margin-bottom: var(--sp-64); }
 .result-section.hidden { display: none; }
 .section-head {
   display: flex; align-items: center; gap: var(--sp-12);
@@ -174,7 +185,7 @@ body {
 .section-marker.win  { background: var(--win-border); }
 .section-marker.draw { background: var(--draw-border); }
 .section-marker.loss { background: var(--loss-border); }
-.section-title { font-size: 16px; font-weight: 700; }
+.section-title { font-size: 20px; font-weight: 700; }
 .section-count {
   font-size: 11px; color: var(--text-low);
   background: var(--surface-tertiary); padding: 2px 8px; border-radius: var(--radius-4);
@@ -182,9 +193,9 @@ body {
 
 /* ===== Masonry ===== */
 .cards-masonry {
-  columns: 3 280px; column-gap: var(--sp-16);
+  columns: 3 280px; column-gap: var(--sp-20);
 }
-.card-wrap { break-inside: avoid; margin-bottom: var(--sp-16); }
+.card-wrap { break-inside: avoid; margin-bottom: var(--sp-20); }
 
 /* ===== Card（Pinterest風・画像ファースト） ===== */
 .card {
@@ -212,9 +223,9 @@ body {
   padding: 3px 8px; border-radius: var(--radius-4);
   border: 1px solid var(--border-low);
 }
-.card-body { padding: var(--sp-16) var(--sp-20) var(--sp-20); }
+.card-body { padding: var(--sp-20) var(--sp-20) var(--sp-24); }
 .card-period {
-  font-size: 11px; color: var(--text-low);
+  font-size: 12px; color: var(--text-low);
   margin-bottom: var(--sp-12);
 }
 .card-top {
@@ -234,7 +245,7 @@ body {
   background: var(--surface-tertiary); padding: 3px 8px; border-radius: var(--radius-4);
 }
 .card-id { margin-left: auto; font-size: 10px; color: var(--text-low); font-family: monospace; }
-.card-title { font-size: 14px; font-weight: 700; color: var(--text-high); margin-bottom: var(--sp-12); line-height: 1.4; }
+.card-title { font-size: 15px; font-weight: 700; color: var(--text-high); margin-bottom: var(--sp-12); line-height: 1.5; }
 .factor-block {
   border-left: 3px solid var(--brand-primary);
   padding-left: var(--sp-12); margin-bottom: var(--sp-16);
@@ -246,8 +257,8 @@ body {
   padding-top: var(--sp-12); border-top: 1px solid var(--border-low);
 }
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
-.meta-lbl { font-size: 10px; color: var(--text-low); }
-.meta-val { font-size: 12px; font-weight: 600; color: var(--text-medium); }
+.meta-lbl { font-size: 11px; color: var(--text-low); }
+.meta-val { font-size: 14px; font-weight: 700; color: var(--text-medium); }
 .meta-val.up   { color: var(--win-text); }
 .meta-val.down { color: var(--loss-text); }
 
@@ -519,14 +530,15 @@ body {
   .disclaimer-banner { padding: var(--sp-12) var(--sp-16); }
   .layout { display: block; }
   .sidebar {
-    width: 100%; position: static; max-height: none;
-    display: flex; gap: var(--sp-4); overflow-x: auto;
-    padding: var(--sp-8) var(--sp-16);
+    width: 100%; position: static; height: auto; max-height: none;
+    gap: var(--sp-12);
+    padding: var(--sp-12) var(--sp-16);
     border-right: none; border-bottom: 1px solid var(--border-low);
   }
   .sidebar-title { display: none; }
-  .sidebar nav { display: flex; gap: var(--sp-4); }
+  .sidebar-group nav, #sidebar-types { display: flex; gap: var(--sp-4); overflow-x: auto; }
   .sidebar-item { width: auto; white-space: nowrap; }
+  .sidebar-footer { display: none; }
 }
 </style>
 </head>
@@ -911,22 +923,21 @@ const SCREENSHOTS = {
   </div>
 </header>
 
-<div class="filter-bar" id="filter-bar-wrap">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" type="text" id="search-input" placeholder="施策名・仮説・要因を検索…" oninput="applyFilters()">
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">デバイス:</span>
-    <div id="device-chips"></div>
-  </div>
-  <span class="filter-count" id="filter-count"></span>
-</div>
-
 <div class="layout">
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-title">施策タイプ</div>
-  <nav id="sidebar-types"></nav>
+  <div class="sidebar-search">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="search-input" placeholder="施策を検索…" oninput="applyFilters()">
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-title">施策タイプ</div>
+    <nav id="sidebar-types"></nav>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-title">デバイス</div>
+    <div class="sidebar-devices" id="device-chips"></div>
+  </div>
+  <div class="sidebar-footer" id="filter-count"></div>
 </aside>
 <div class="content">
 
@@ -1143,8 +1154,8 @@ const METRIC_LABELS = {
 
 // 改善/悪化の色判定（「下がる=良い」指標にも対応: 元の値の注記を優先）
 function metricClass(fullValue, shortValue) {
-  if (/悪化/.test(fullValue)) return 'down';
-  if (/改善/.test(fullValue)) return 'up';
+  if (/悪化(?![せしな])/.test(fullValue)) return 'down';
+  if (/改善(?![せしな])/.test(fullValue)) return 'up';
   if (shortValue.startsWith('+')) return 'up';
   if (shortValue.startsWith('-')) return 'down';
   return '';
@@ -1280,7 +1291,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 function switchView(v) {
   document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
   document.getElementById('view-insights').classList.toggle('active', v === 'insights');
-  document.getElementById('filter-bar-wrap').style.display = v === 'list' ? '' : 'none';
   document.getElementById('sidebar').style.display = v === 'list' ? '' : 'none';
   document.getElementById('btn-list').classList.toggle('active', v === 'list');
   document.getElementById('btn-insights').classList.toggle('active', v === 'insights');
