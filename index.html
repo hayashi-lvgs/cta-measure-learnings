@@ -124,6 +124,41 @@ body {
 }
 
 /* ===== Main ===== */
+/* ===== Layout（サイドバー＋コンテンツ） ===== */
+.layout { display: flex; align-items: flex-start; }
+.content { flex: 1; min-width: 0; }
+.sidebar {
+  width: 216px; flex-shrink: 0;
+  position: sticky; top: 53px;
+  max-height: calc(100vh - 53px); overflow-y: auto;
+  padding: var(--sp-20) var(--sp-12);
+  background: var(--surface-primary);
+  border-right: 1px solid var(--border-low);
+}
+.sidebar-title {
+  font-size: 11px; font-weight: 700; color: var(--text-low);
+  text-transform: uppercase; letter-spacing: .5px;
+  padding: 0 var(--sp-12); margin-bottom: var(--sp-8);
+}
+.sidebar-item {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8);
+  width: 100%; text-align: left;
+  padding: 8px var(--sp-12); border: none; border-radius: var(--radius-8);
+  background: transparent; cursor: pointer;
+  font-size: 13px; color: var(--text-medium); line-height: 1.4;
+  transition: background .12s;
+}
+.sidebar-item:hover { background: var(--surface-secondary); }
+.sidebar-item.on {
+  background: var(--surface-accent); color: var(--text-primary); font-weight: 700;
+}
+.sidebar-count {
+  font-size: 11px; color: var(--text-low); font-weight: 400;
+  background: var(--surface-tertiary); padding: 1px 7px; border-radius: var(--radius-24);
+  flex-shrink: 0;
+}
+.sidebar-item.on .sidebar-count { color: var(--text-primary); }
+
 .main { max-width: 1200px; margin: 0 auto; padding: var(--sp-32) var(--sp-24); }
 
 /* ===== Result section ===== */
@@ -482,6 +517,16 @@ body {
   .site-header { padding: var(--sp-12) var(--sp-16); }
   .cards-masonry { columns: 1; }
   .disclaimer-banner { padding: var(--sp-12) var(--sp-16); }
+  .layout { display: block; }
+  .sidebar {
+    width: 100%; position: static; max-height: none;
+    display: flex; gap: var(--sp-4); overflow-x: auto;
+    padding: var(--sp-8) var(--sp-16);
+    border-right: none; border-bottom: 1px solid var(--border-low);
+  }
+  .sidebar-title { display: none; }
+  .sidebar nav { display: flex; gap: var(--sp-4); }
+  .sidebar-item { width: auto; white-space: nowrap; }
 }
 </style>
 </head>
@@ -872,15 +917,18 @@ const SCREENSHOTS = {
     <input class="search-input" type="text" id="search-input" placeholder="施策名・仮説・要因を検索…" oninput="applyFilters()">
   </div>
   <div class="filter-group">
-    <span class="filter-label">施策タイプ:</span>
-    <div id="type-chips"></div>
-  </div>
-  <div class="filter-group">
     <span class="filter-label">デバイス:</span>
     <div id="device-chips"></div>
   </div>
   <span class="filter-count" id="filter-count"></span>
 </div>
+
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-title">施策タイプ</div>
+  <nav id="sidebar-types"></nav>
+</aside>
+<div class="content">
 
 <div class="disclaimer-banner" id="disclaimer-banner">
   <div class="disclaimer-summary" onclick="toggleDisclaimer()">
@@ -963,6 +1011,9 @@ const SCREENSHOTS = {
   </div>
 </main>
 
+</div><!-- /.content -->
+</div><!-- /.layout -->
+
 <!-- ===== Modal ===== -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
   <div class="modal" id="modal">
@@ -1003,10 +1054,15 @@ function buildFilterChips() {
   const types = [...new Set(MEASURES.map(m => m.type))];
   const devices = [...new Set(MEASURES.flatMap(m => m.devices))];
 
-  const tc = document.getElementById('type-chips');
-  types.forEach(t => {
-    tc.innerHTML += `<button class="chip" data-type="${t}" onclick="toggleType('${t}')">${t}</button> `;
-  });
+  // 施策タイプは左サイドバー（単一選択・先頭に「すべて見る」）
+  const counts = {};
+  MEASURES.forEach(m => { counts[m.type] = (counts[m.type] || 0) + 1; });
+  const sb = document.getElementById('sidebar-types');
+  sb.innerHTML =
+    `<button class="sidebar-item on" data-stype="__all__" onclick="selectType('__all__')"><span>すべて見る</span><span class="sidebar-count">${MEASURES.length}</span></button>` +
+    types.map(t =>
+      `<button class="sidebar-item" data-stype="${t}" onclick="selectType('${t}')"><span>${t}</span><span class="sidebar-count">${counts[t]}</span></button>`
+    ).join('');
 
   const dc = document.getElementById('device-chips');
   devices.forEach(d => {
@@ -1014,10 +1070,11 @@ function buildFilterChips() {
   });
 }
 
-function toggleType(t) {
-  if (activeTypes.has(t)) activeTypes.delete(t); else activeTypes.add(t);
-  document.querySelectorAll('[data-type]').forEach(el => {
-    el.classList.toggle('on', activeTypes.has(el.dataset.type));
+function selectType(t) {
+  activeTypes.clear();
+  if (t !== '__all__') activeTypes.add(t);
+  document.querySelectorAll('[data-stype]').forEach(el => {
+    el.classList.toggle('on', el.dataset.stype === t);
   });
   applyFilters();
 }
@@ -1224,6 +1281,7 @@ function switchView(v) {
   document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
   document.getElementById('view-insights').classList.toggle('active', v === 'insights');
   document.getElementById('filter-bar-wrap').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('sidebar').style.display = v === 'list' ? '' : 'none';
   document.getElementById('btn-list').classList.toggle('active', v === 'list');
   document.getElementById('btn-insights').classList.toggle('active', v === 'insights');
 }
