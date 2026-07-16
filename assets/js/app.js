@@ -1,3 +1,28 @@
+// ===== Theme (dark mode) =====
+// 明示指定が無ければ OS 設定に追従。ボタンで light/dark を明示切替し localStorage に保存。
+function currentTheme() {
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'dark' || t === 'light') return t;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function updateThemeButton(theme) {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const dark = theme === 'dark';
+  btn.textContent = dark ? '☀️' : '🌙';
+  const label = dark ? 'ライトモードに切替' : 'ダークモードに切替';
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('cta-theme', theme); } catch (e) {}
+  updateThemeButton(theme);
+}
+function toggleTheme() {
+  applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+}
+
 // ===== Disclaimer toggle =====
 function toggleDisclaimer() {
   const detail = document.getElementById('disclaimer-detail');
@@ -13,6 +38,7 @@ let searchQ = "";
 
 // ===== Init =====
 function init() {
+  updateThemeButton(currentTheme());
   buildFilterChips();
   buildInsights();
   applyFilters();

@@ -22,6 +22,14 @@
 
   --brand-primary: #0047CC;
 
+  /* --- 従来ハードコードだった色をトークン化（light値は従来と同一・ダークで上書き） --- */
+  --surface-page:        #F9FAFB;   /* body背景 */
+  --sidebar-title:       #64748B;
+  --sidebar-item:        #3D4B5F;
+  --sidebar-on-bg:       #F0F5FF;
+  --sidebar-on-text:     #2B70EF;
+  --sidebar-count-on-bg: #E0EBFF;
+
   --radius-4:  4px;
   --radius-8:  8px;
   --radius-16: 16px;
@@ -40,7 +48,7 @@
 
 body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-  background: #F9FAFB;
+  background: var(--surface-page);
   color: var(--text-high);
   line-height: 1.6;
   font-size: 15px;
@@ -134,7 +142,7 @@ body {
 .sidebar-search .search-input { width: 100%; }
 .sidebar-group { display: flex; flex-direction: column; gap: 2px; }
 .sidebar-title {
-  font-size: 13px; font-weight: 600; color: #64748B;
+  font-size: 13px; font-weight: 600; color: var(--sidebar-title);
   padding: 6px var(--sp-16); margin-bottom: 2px;
 }
 .sidebar-item {
@@ -142,19 +150,19 @@ body {
   width: 100%; text-align: left;
   padding: 8px var(--sp-16); border: none; border-radius: var(--radius-8);
   background: transparent; cursor: pointer;
-  font-size: 15px; font-weight: 500; color: #3D4B5F; line-height: 1.5;
+  font-size: 15px; font-weight: 500; color: var(--sidebar-item); line-height: 1.5;
   transition: background .12s;
 }
 .sidebar-item:hover { background: var(--surface-secondary); }
 .sidebar-item.on {
-  background: #F0F5FF; color: #2B70EF; font-weight: 600;
+  background: var(--sidebar-on-bg); color: var(--sidebar-on-text); font-weight: 600;
 }
 .sidebar-count {
   font-size: 12px; color: var(--text-low); font-weight: 400;
   background: var(--surface-tertiary); padding: 1px 8px; border-radius: var(--radius-24);
   flex-shrink: 0;
 }
-.sidebar-item.on .sidebar-count { color: #2B70EF; background: #E0EBFF; }
+.sidebar-item.on .sidebar-count { color: var(--sidebar-on-text); background: var(--sidebar-count-on-bg); }
 .sidebar-devices { display: flex; gap: var(--sp-8); padding: 4px var(--sp-16); }
 .sidebar-footer {
   margin-top: auto;
@@ -533,3 +541,115 @@ body {
   .sidebar-item { width: auto; white-space: nowrap; }
   .sidebar-footer { display: none; }
 }
+
+/* ===================================================================
+   ヘッダーのテーマ切替ボタン
+   =================================================================== */
+.theme-toggle {
+  margin-left: var(--sp-8);
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 16px; line-height: 1;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-low);
+  border-radius: var(--radius-8);
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.theme-toggle:hover { background: var(--surface-secondary); border-color: var(--border-high); }
+
+/* ===================================================================
+   ダークモード
+   - システム設定に追従（@media prefers-color-scheme: dark）
+   - ヘッダーの切替ボタンで明示指定した data-theme が優先
+     （:root[data-theme] の specificity が @media 内 :root を上回る）
+   - 明示 light の時は @media(dark) を :not() で除外してライトを維持
+   色は全てトークン経由なので、ここでトークンを上書きするだけで全体が切り替わる。
+   =================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-page:        #0F1116;
+    --surface-primary:     #191C23;
+    --surface-secondary:   #14171D;
+    --surface-tertiary:    #23272F;
+    --surface-primary-high:#1C2740;
+    --surface-accent:      #2A1E15;
+    --surface-success:     #15241B;
+    --surface-attention:   #2A1717;
+
+    --text-high:    #E9EBF1;
+    --text-medium:  #AAB0C0;
+    --text-low:     #757B8E;
+    --text-white:   #FFFFFF;
+    --text-primary: #6699F5;
+    --text-accent:  #F2A365;
+    --text-caution: #F2777A;
+    --text-success: #6FD696;
+
+    --border-low:  #2B303B;
+    --border-high: #3C4353;
+
+    --brand-primary: #3A6DE0;
+
+    --win-bg:  #15241B; --win-border:  #4CA673; --win-text:  #6FD696;
+    --draw-bg: #1E222B; --draw-border: #757B8E; --draw-text: #AAB0C0;
+    --loss-bg: #2A1717; --loss-border: #E15555; --loss-text: #F2777A;
+
+    --design-bg:     #241A33; --design-border: #9B72E8; --design-text:   #C7ABF7;
+    --di-good-bg:    #15241B; --di-good-text: #6FD696; --di-good-border: #2F6A45;
+    --di-caution-bg: #2A2310; --di-caution-text: #F2C14E; --di-caution-border: #7C5E1F;
+    --di-bad-bg:     #2A1717; --di-bad-text: #F2777A; --di-bad-border: #7C2F2F;
+
+    --surface-page:        #0F1116;
+    --sidebar-title:       #8A90A2;
+    --sidebar-item:        #C6CBD8;
+    --sidebar-on-bg:       rgba(58,109,224,.20);
+    --sidebar-on-text:     #7FA6F5;
+    --sidebar-count-on-bg: rgba(58,109,224,.30);
+  }
+}
+:root[data-theme="dark"] {
+  --surface-page:        #0F1116;
+  --surface-primary:     #191C23;
+  --surface-secondary:   #14171D;
+  --surface-tertiary:    #23272F;
+  --surface-primary-high:#1C2740;
+  --surface-accent:      #2A1E15;
+  --surface-success:     #15241B;
+  --surface-attention:   #2A1717;
+
+  --text-high:    #E9EBF1;
+  --text-medium:  #AAB0C0;
+  --text-low:     #757B8E;
+  --text-white:   #FFFFFF;
+  --text-primary: #6699F5;
+  --text-accent:  #F2A365;
+  --text-caution: #F2777A;
+  --text-success: #6FD696;
+
+  --border-low:  #2B303B;
+  --border-high: #3C4353;
+
+  --brand-primary: #3A6DE0;
+
+  --win-bg:  #15241B; --win-border:  #4CA673; --win-text:  #6FD696;
+  --draw-bg: #1E222B; --draw-border: #757B8E; --draw-text: #AAB0C0;
+  --loss-bg: #2A1717; --loss-border: #E15555; --loss-text: #F2777A;
+
+  --design-bg:     #241A33; --design-border: #9B72E8; --design-text:   #C7ABF7;
+  --di-good-bg:    #15241B; --di-good-text: #6FD696; --di-good-border: #2F6A45;
+  --di-caution-bg: #2A2310; --di-caution-text: #F2C14E; --di-caution-border: #7C5E1F;
+  --di-bad-bg:     #2A1717; --di-bad-text: #F2777A; --di-bad-border: #7C2F2F;
+
+  --sidebar-title:       #8A90A2;
+  --sidebar-item:        #C6CBD8;
+  --sidebar-on-bg:       rgba(58,109,224,.20);
+  --sidebar-on-text:     #7FA6F5;
+  --sidebar-count-on-bg: rgba(58,109,224,.30);
+}
+/* ダーク時はカードのホバー影を暗い影に（青グローは背景に沈むため） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.45); }
+}
+:root[data-theme="dark"] .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.45); }

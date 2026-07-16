@@ -25,6 +25,8 @@ CTA（キャリアチケット就職）記事ページ施策の勝ち/負け/引
 ## ディレクトリ構成
 
 ```
+├── CLAUDE.md             # Claude Code 向けの入口（目的・キーファイル・重要ルール）
+├── README.md             # 人間向けの入口（本ファイル）
 ├── index.html            # サイト骨格（head の css リンク + body マークアップ + 末尾 script）
 ├── assets/
 │   ├── css/style.css     # 表示スタイル（melta UI 参考）
@@ -37,7 +39,7 @@ CTA（キャリアチケット就職）記事ページ施策の勝ち/負け/引
 ├── measures/             # 施策別サマリ（Markdown・人間可読の正）
 │   └── CTA-9270.md … CTA-13979.md
 └── docs/
-    ├── 引き継ぎ書.md                          # 運用の全体像（まずこれを読む）
+    ├── このサイトの目的と引き継ぎ書.md          # 目的＋運用の全体像（まずこれを読む）
     ├── 並行作業ルール.md                       # 他Claudeとの衝突防止ルール
     └── CTA-13979-external-factors-research.md  # 外部要因リサーチ（未反映・承認待ち）
 ```
@@ -46,4 +48,4 @@ CTA（キャリアチケット就職）記事ページ施策の勝ち/負け/引
 
 - 1施策の追加は原則 `data/measures.js` の編集だけで完結します（`MEASURES` にオブジェクトを1つ追加）。
 - スクショを付ける場合は `images/CTA-{番号}-before-after.png` を置き、`data/measures.js` の `SCREENSHOTS` に1行足すだけ。
-- **事実（`factuals`）とAI推論（`hypothesisInsights`）の区別を必ず維持**してください。詳細は `docs/引き継ぎ書.md` を参照。
+- **事実（`factuals`）とAI推論（`hypothesisInsights`）の区別を必ず維持**してください。詳細は `docs/このサイトの目的と引き継ぎ書.md` を参照。

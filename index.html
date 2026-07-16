@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>施策学習サイト — CTA</title>
 <link rel="stylesheet" href="assets/css/style.css">
+<script>
+/* 保存済みテーマを描画前に適用（チラつき防止）。未選択ならOSの設定に追従。 */
+(function(){try{var t=localStorage.getItem('cta-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 </head>
 <body>
 
@@ -16,6 +20,7 @@
     <button class="view-btn active" id="btn-list" onclick="switchView('list')">一覧</button>
     <button class="view-btn" id="btn-insights" onclick="switchView('insights')">横断インサイト</button>
   </div>
+  <button class="theme-toggle" id="theme-toggle" type="button" onclick="toggleTheme()" title="ダークモードに切替" aria-label="ダークモードに切替">🌙</button>
 </header>
 
 <div class="layout">
