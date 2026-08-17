@@ -20,6 +20,7 @@
     <button class="view-btn active" id="btn-list" onclick="switchView('list')">一覧</button>
     <button class="view-btn" id="btn-insights" onclick="switchView('insights')">横断インサイト</button>
   </div>
+  <button class="import-link" type="button" onclick="openImport()" title="検証用シートPDFをドロップして即カード化（このブラウザに一時保存）">＋ PDFから取り込み</button>
   <button class="theme-toggle" id="theme-toggle" type="button" onclick="toggleTheme()" title="ダークモードに切替" aria-label="ダークモードに切替">🌙</button>
 </header>
 
@@ -40,25 +41,6 @@
   <div class="sidebar-footer" id="filter-count"></div>
 </aside>
 <div class="content">
-
-<div class="disclaimer-banner" id="disclaimer-banner">
-  <div class="disclaimer-summary" onclick="toggleDisclaimer()">
-    <span class="disclaimer-icon">⚠️</span>
-    <span class="disclaimer-short">
-      <strong>施策結果の読み方について</strong> ― 記載の数値はテスト期間中のスナップショットです。ABテスト結果のみで施策の価値を断言せず、外部環境を必ず考慮してください。
-    </span>
-    <button class="disclaimer-toggle-btn" id="disclaimer-btn">詳しく見る</button>
-  </div>
-  <div class="disclaimer-detail" id="disclaimer-detail">
-    <ul>
-      <li><strong>① 季節性・YoY（前年同期比）</strong> — 就活シーズンの時期により母数が大きく変動する。前年同期と採用市場の環境が変わっていると、純粋な施策効果との分離が困難になる。</li>
-      <li><strong>② 学生層の卒年差（26卒・27卒・28卒…）</strong> — 卒年によってニーズ・情報感度・行動パターンが異なる。市場に出ている学年の構成が変われば、同一施策でも結果が変わりうる。</li>
-      <li><strong>③ 採用市場・社会動向</strong> — 企業の採用意欲・就活解禁時期の前後・景況感の変化が、ユーザーの登録動機に影響する。テスト期間中に大きな市場変動があった場合は特に注意。</li>
-      <li><strong>④ 競合媒体・外部要因</strong> — 競合サービスの大型施策・Googleアルゴリズムの更新・SEO流入量の変動が、流入ユーザーの質を変える可能性がある。</li>
-    </ul>
-    <p style="margin-top:8px;font-style:italic;">「勝ち/負け」はあくまでテスト条件下での判定。上記を踏まえたうえで、次施策の設計に活かすことが重要です。</p>
-  </div>
-</div>
 
 <main class="main">
   <!-- List view -->
@@ -125,6 +107,31 @@
 </div><!-- /.content -->
 </div><!-- /.layout -->
 
+<!-- ===== PDF取り込みオーバーレイ（サイト上で即カード化・localStorage保存） ===== -->
+<div class="import-overlay" id="import-overlay" onclick="closeImportOnOverlay(event)">
+  <div class="import-modal">
+    <div class="import-modal-head">
+      <strong>PDFから施策カードを取り込み</strong>
+      <button class="modal-close" type="button" onclick="closeImport()">×</button>
+    </div>
+    <p class="import-note">
+      検証用シートPDFをドロップすると、このブラウザに<strong>即カード化</strong>されます。
+      ⚠️ これは <strong>measures.js に未保存＝他の人には共有されません</strong>（このブラウザのみ）。
+      機械抽出のみの下書きで、判定（勝ち/負け）・事実/AI推論の仕分け・デザイン観点は<strong>要レビュー</strong>です。
+    </p>
+    <div id="site-drop" class="site-drop">
+      <strong>PDFをここにドロップ</strong><br>
+      <span>またはクリックして選択（.pdf）</span>
+      <input type="file" id="site-file" accept="application/pdf,.pdf" hidden>
+    </div>
+    <div id="import-status" class="import-status"></div>
+    <p class="import-foot">
+      measures.js に「正」として保存し全員に共有したい場合は
+      <a href="tools/import.html">取り込みツール（スニペット出力）</a> を使ってください。
+    </p>
+  </div>
+</div>
+
 <!-- ===== Modal ===== -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
   <div class="modal" id="modal">
@@ -142,6 +149,10 @@
 
 <!-- ===== データ（施策の正: MEASURES / INSIGHTS / SCREENSHOTS） ===== -->
 <script src="data/measures.js"></script>
+<!-- ===== PDF取り込み用（pdf.jsローカル同梱・CDN不使用）+ 共通抽出ロジック ===== -->
+<script>window.PDFJS_WORKER_SRC = "vendor/pdfjs/pdf.worker.min.js";</script>
+<script src="vendor/pdfjs/pdf.min.js"></script>
+<script src="assets/js/extract.js"></script>
 <!-- ===== 表示ロジック（末尾で init() 実行） ===== -->
 <script src="assets/js/app.js"></script>
 

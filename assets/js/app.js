@@ -23,25 +23,90 @@ function toggleTheme() {
   applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
 }
 
-// ===== Disclaimer toggle =====
-function toggleDisclaimer() {
-  const detail = document.getElementById('disclaimer-detail');
-  const btn = document.getElementById('disclaimer-btn');
-  const isOpen = detail.classList.toggle('open');
-  btn.textContent = isOpen ? '閉じる' : '詳しく見る';
-}
-
 // ===== State =====
 let activeTypes = new Set();
 let activeDevices = new Set();
 let searchQ = "";
 
+// ===== 取り込みカード（このブラウザのみ・localStorage） =====
+// measures.js（＝git共有の正）には入らない一時カード。_local:true で区別する。
+const LOCAL_KEY = 'cta-imported';
+function loadLocal() { try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch (e) { return []; } }
+function saveLocal(arr) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(arr)); } catch (e) {} }
+
+// 起動時: localStorage の取り込みカードを MEASURES に合流（id重複は正を優先しスキップ）
+function mergeLocalIntoMeasures() {
+  loadLocal().forEach(m => {
+    if (!MEASURES.some(x => x.id === m.id)) MEASURES.push(Object.assign({}, m, { _local: true }));
+  });
+}
+function refreshAll() { buildFilterChips(); buildInsights(); applyFilters(); }
+
+function addLocalMeasure(measure) {
+  // measures.js の「正」と同一idなら、上書きせずローカルidを退避
+  if (MEASURES.some(x => x.id === measure.id && !x._local)) measure.id += "-取込";
+  const arr = loadLocal().filter(m => m.id !== measure.id);
+  arr.push(measure); saveLocal(arr);
+  const idx = MEASURES.findIndex(x => x.id === measure.id && x._local);
+  if (idx >= 0) MEASURES.splice(idx, 1);
+  MEASURES.push(Object.assign({}, measure, { _local: true }));
+  refreshAll();
+}
+function removeLocalMeasure(id) {
+  saveLocal(loadLocal().filter(m => m.id !== id));
+  const idx = MEASURES.findIndex(x => x.id === id && x._local);
+  if (idx >= 0) MEASURES.splice(idx, 1);
+  closeModal(); refreshAll();
+}
+function copyLocalSnippet(id) {
+  const m = MEASURES.find(x => x.id === id);
+  if (!m || !window.CTAExtract) return;
+  const text = CTAExtract.toSnippet(m);
+  const done = () => alert('スニペットをコピーしました。data/measures.js の MEASURES 配列末尾に「,」を付けて貼り付け、レビューして仕上げてください。');
+  try { navigator.clipboard.writeText(text).then(done, done); } catch (e) { done(); }
+}
+
+// ===== 取り込みオーバーレイ =====
+function openImport() { document.getElementById('import-overlay').classList.add('open'); }
+function closeImport() { document.getElementById('import-overlay').classList.remove('open'); }
+function closeImportOnOverlay(e) { if (e.target === document.getElementById('import-overlay')) closeImport(); }
+async function handleSitePdf(file) {
+  if (!file) return;
+  const st = document.getElementById('import-status');
+  const say = (msg, kind) => { st.textContent = msg; st.className = 'import-status ' + (kind || ''); };
+  if (!/\.pdf$/i.test(file.name)) return say('PDFファイルを選んでください。', 'err');
+  if (!window.CTAExtract) return say('抽出ロジック(extract.js)の読み込みに失敗しました。', 'err');
+  say('解析中… ' + file.name);
+  try {
+    const buf = await file.arrayBuffer();
+    const m = await CTAExtract.buildMeasure(buf, file.name);
+    addLocalMeasure(m);
+    say(`取り込み完了: ${m.id} を一覧に追加しました（未保存・このブラウザのみ）。`, 'ok');
+    setTimeout(closeImport, 1100);
+  } catch (e) {
+    console.error(e);
+    say('解析に失敗しました: ' + e.message + '（Chromeのfile://でworkerが起動しない場合はFirefoxで開くか、フォルダで `python3 -m http.server` してhttp経由で開いてください）', 'err');
+  }
+}
+function wireSiteImport() {
+  const input = document.getElementById('site-file');
+  const drop = document.getElementById('site-drop');
+  if (!input || !drop) return;
+  input.addEventListener('change', e => handleSitePdf(e.target.files[0]));
+  drop.addEventListener('click', () => input.click());
+  ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => handleSitePdf(e.dataTransfer.files[0]));
+}
+
 // ===== Init =====
 function init() {
   updateThemeButton(currentTheme());
+  mergeLocalIntoMeasures();
   buildFilterChips();
   buildInsights();
   applyFilters();
+  wireSiteImport();
 }
 
 function buildFilterChips() {
@@ -59,9 +124,9 @@ function buildFilterChips() {
     ).join('');
 
   const dc = document.getElementById('device-chips');
-  devices.forEach(d => {
-    dc.innerHTML += `<button class="chip" data-device="${d}" onclick="toggleDevice('${d}')">${d}</button> `;
-  });
+  dc.innerHTML = devices.map(d =>
+    `<button class="chip${activeDevices.has(d) ? ' on' : ''}" data-device="${d}" onclick="toggleDevice('${d}')">${d}</button>`
+  ).join(' ');
 }
 
 function selectType(t) {
@@ -132,7 +197,8 @@ const METRIC_LABELS = {
   ctrChange: 'CTR変化', cvrChange: 'CVR変化', significance: '有意差', sampleSize: 'サンプル数',
   efImprove: 'EF完了率', cvrImprove: 'CVR', efRate: 'EF完了率',
   mcvrC: 'MCVR', cvrC: 'CVR (C案)', cvrB: 'CVR (B案)', cta2ctrC: 'CTA2 CTR',
-  engageSP: 'エンゲージ時間 (SP)', bounceRateSP: '直帰率 (SP)', bounceRatePC: '直帰率 (PC)'
+  engageSP: 'エンゲージ時間 (SP)', bounceRateSP: '直帰率 (SP)', bounceRatePC: '直帰率 (PC)',
+  mcvr: 'MCVR', ef: 'EF完了率', cvr: 'CVR', ctr: 'CTR' // PDF取り込みツール(tools/import)が生成するキー
 };
 
 // 改善/悪化の色判定（「下がる=良い」指標にも対応: 元の値の注記を優先）
@@ -160,8 +226,14 @@ function cardHTML(m) {
       <span class="thumb-label">📸 施策前後</span>
     </div>` : '';
 
+  const localDel = m._local
+    ? `<button class="local-del" title="この取り込みカードを削除" onclick="event.stopPropagation();removeLocalMeasure('${m.id}')">✕</button>` : '';
+  const localTag = m._local
+    ? `<span class="local-tag" title="このブラウザだけの一時カード（measures.js未保存）">🔧 未保存</span>` : '';
+
   return `
     <div class="card-wrap">
+      ${localDel}
       <div class="card" onclick="openModal('${m.id}')">
         ${thumbHTML}
         <div class="card-body">
@@ -169,6 +241,7 @@ function cardHTML(m) {
             ${badgeHTML(m.result)}
             <span class="type-tag">${m.type}</span>
             <span class="card-id">${m.id}</span>
+            ${localTag}
           </div>
           <div class="card-title">${m.title}</div>
           <div class="card-period">📅 ${m.period}</div>
@@ -220,7 +293,18 @@ function openModal(id) {
       </a>
     </div>` : '';
 
+  const localBanner = m._local ? `
+    <div class="local-banner">
+      🔧 <strong>これは取り込んだ未保存カードです</strong>（このブラウザのみ・他の人には共有されません／機械抽出のみ・要レビュー）。
+      「正」として全員に残すには、下のスニペットを <code>data/measures.js</code> に貼り付け、Claudeで事実/推論・判定・デザイン観点を仕上げてください。
+      <div class="lb-actions">
+        <button onclick="copyLocalSnippet('${m.id}')">📋 measures.js用スニペットをコピー</button>
+        <button class="danger" onclick="removeLocalMeasure('${m.id}')">✕ このカードを削除</button>
+      </div>
+    </div>` : '';
+
   document.getElementById('modal-body').innerHTML = `
+    ${localBanner}
     ${screenshotHTML}
     <div class="modal-sec">
       <div class="modal-sec-title">仮説</div>
@@ -268,7 +352,7 @@ function closeModalOnOverlay(e) {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeImport(); } });
 
 // ===== View switch =====
 function switchView(v) {
