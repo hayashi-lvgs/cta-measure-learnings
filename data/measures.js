@@ -412,5 +412,10 @@ const INSIGHTS = {
 // 画像が無い施策はここに書かない（= サムネ非表示）。挙動は SCREENSHOTS[m.id] のガードで維持。
 const SCREENSHOTS = {
   "CTA-11925": "images/CTA-11925-before-after.png",
-  "CTA-13979": "images/CTA-13979-before-after.png"
+  "CTA-13979": "images/CTA-13979-before-after.png",
+  "CTA-12483": "images/CTA-12483-before-after.png",
+  "CTA-12584": "images/CTA-12584-before-after.png",
+  "CTA-12699": "images/CTA-12699-before-after.png",
+  "CTA-13031": "images/CTA-13031-before-after.png",
+  "CTA-7643":  "images/CTA-7643-before-after.png"
 };
