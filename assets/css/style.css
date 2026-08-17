@@ -271,11 +271,15 @@ body {
 }
 .card-thumb {
   position: relative;
+  height: 150px;                 /* 全カード統一（上部おおよそ1/3） */
   background: var(--surface-secondary);
   border-bottom: 1px solid var(--border-low);
+  overflow: hidden;
 }
 .card-thumb img {
-  display: block; width: 100%; height: auto;
+  display: block; width: 100%; height: 100%;
+  object-fit: contain;           /* 横長の施策前後画像を切らずに全体表示 */
+  object-position: center;
 }
 .thumb-label {
   position: absolute; top: 8px; left: 8px;
