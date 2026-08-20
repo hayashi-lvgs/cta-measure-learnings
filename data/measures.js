@@ -2,7 +2,7 @@ const MEASURES = [
   {
     id: "CTA-11925",
     title: "記事詳細ページ SP/PC — CTS送客のCTAボタン削除によるCVR改善",
-    type: "CTA削減（選択肢一本化）",
+    type: "CTA削減・一本化",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "win",
@@ -44,7 +44,7 @@ const MEASURES = [
   {
     id: "CTA-12483",
     title: "記事TOPバナー 記事中盤への挿入テスト",
-    type: "バナー挿入",
+    type: "CTA挿入位置",
     pages: ["記事ページ"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -80,7 +80,7 @@ const MEASURES = [
   {
     id: "CTA-12584",
     title: "記事TOPバナー クリエイティブ変更（新型バナー）",
-    type: "クリエイティブ変更",
+    type: "CTAクリエイティブ・形式変更",
     pages: ["記事ページ"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -117,7 +117,7 @@ const MEASURES = [
   {
     id: "CTA-13031",
     title: "記事TOP SP/PC UI変更（ビジュアル強化・情報再編）",
-    type: "UI変更",
+    type: "CTAクリエイティブ・形式変更",
     pages: ["記事ページ SP/PC"],
     devices: ["SP", "PC"],
     result: "loss",
@@ -157,7 +157,7 @@ const MEASURES = [
   ,{
     id: "CTA-13979",
     title: "記事詳細 記事同化型CTA挿入（ABC比較）",
-    type: "記事同化型CTA挿入",
+    type: "CTAクリエイティブ・形式変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "win",
@@ -200,7 +200,7 @@ const MEASURES = [
   ,{
     id: "CTA-12699",
     title: "記事詳細ページ FV UI変更によるエンゲージメント改善 ph1",
-    type: "UI変更（FV改善）",
+    type: "FV・MV / UI変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -246,7 +246,7 @@ const MEASURES = [
   ,{
     id: "CTA-9270",
     title: "記事詳細 MV(サムネイル)削除＋適職診断EF導入によるCVR改善（ABC比較）",
-    type: "UI変更（MV削除）",
+    type: "FV・MV / UI変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "win",
@@ -291,7 +291,7 @@ const MEASURES = [
   ,{
     id: "CTA-7643",
     title: "記事詳細ページ SP/PC — ES添削プロンプト配布導線（フックコンテンツ）導入によるCVR改善",
-    type: "新規導線追加（フックコンテンツ配布）",
+    type: "記事内EF・フックコンテンツ導線",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "loss",
@@ -338,7 +338,7 @@ const MEASURES = [
   {
     id: "CTA-4183",
     title: "EF 未使用入力項目（都道府県・就活終了希望時期）の削除による入力負荷軽減",
-    type: "EF改修（項目削除）",
+    type: "EF改修（入力フォーム最適化）",
     pages: ["EF"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -371,7 +371,7 @@ const MEASURES = [
   {
     id: "CTA-4226",
     title: "EF 性別選択肢に「回答しない」を追加（ポリコレ対応）",
-    type: "EF改修（選択肢追加）",
+    type: "EF改修（入力フォーム最適化）",
     pages: ["EF"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -405,7 +405,7 @@ const MEASURES = [
   {
     id: "CTA-5351",
     title: "EF 全仕様を一問一答型UIへ変更（SP・AB有）",
-    type: "UI変更",
+    type: "EF改修（入力フォーム最適化）",
     pages: ["EF"],
     devices: ["SP"],
     result: "win",
@@ -448,7 +448,7 @@ const MEASURES = [
   {
     id: "CTA-5543",
     title: "EF 生年月日入力欄のプレースホルダー改修によるEF完了率改善",
-    type: "EF改修",
+    type: "EF改修（入力フォーム最適化）",
     pages: ["EF"],
     devices: ["SP", "PC"],
     result: "win",
@@ -483,7 +483,7 @@ const MEASURES = [
   {
     id: "CTA-6355",
     title: "記事詳細 SP/PC — 最上部CTAボタンのバナー型（サービス訴求）変更によるCVR検証",
-    type: "バナー変更",
+    type: "CTAクリエイティブ・形式変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "loss",
@@ -524,7 +524,7 @@ const MEASURES = [
   {
     id: "CTA-12692",
     title: "記事詳細 SP — フッター追従バナーの表示タイミング変更によるエンゲージメント検証",
-    type: "追従バナー表示タイミング変更",
+    type: "追従バナー",
     pages: ["記事詳細ページ"],
     devices: ["SP"],
     result: "draw",
@@ -559,7 +559,7 @@ const MEASURES = [
   {
     id: "CTA-13038",
     title: "記事詳細 PC — サイドバナー型CTA導入によるCVR改善",
-    type: "サイドバナー型CTA",
+    type: "CTAクリエイティブ・形式変更",
     pages: ["記事詳細ページ"],
     devices: ["PC"],
     result: "win",
@@ -598,7 +598,7 @@ const MEASURES = [
   {
     id: "CTA-13150",
     title: "記事詳細 SP — 目次直下への埋め込みEF（悩み訴求型）導入によるCVR検証",
-    type: "埋め込みEF",
+    type: "記事内EF・フックコンテンツ導線",
     pages: ["記事詳細ページ"],
     devices: ["SP"],
     result: "draw",
@@ -640,7 +640,7 @@ const MEASURES = [
   {
     id: "CTA-13999",
     title: "記事詳細ページ SP/PC — まとめの1行化による直帰率改善",
-    type: "まとめ文言変更（3行→1行）",
+    type: "記事コピー・文言変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -681,7 +681,7 @@ const MEASURES = [
   {
     id: "CTA-14014",
     title: "記事詳細ページ SP/PC — 記事最下部サービス訴求文言の変更",
-    type: "訴求文言変更",
+    type: "記事コピー・文言変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "draw",
@@ -723,7 +723,7 @@ const MEASURES = [
   {
     id: "CTA-14507",
     title: "記事詳細ページ SP/PC — 「まとめ」を「このページで分かること」に変更",
-    type: "まとめ見出し文言変更",
+    type: "記事コピー・文言変更",
     pages: ["記事詳細ページ"],
     devices: ["SP", "PC"],
     result: "draw",
