@@ -843,5 +843,6 @@ const SCREENSHOTS = {
   "CTA-12584": "images/CTA-12584-before-after.png",
   "CTA-12699": "images/CTA-12699-before-after.png",
   "CTA-13031": "images/CTA-13031-before-after.png",
-  "CTA-7643":  "images/CTA-7643-before-after.png"
+  "CTA-7643":  "images/CTA-7643-before-after.png",
+  "CTA-9270":  "images/CTA-9270.png"
 };
